@@ -1,10 +1,7 @@
 #pragma once
 
 
-#include "types.h"
-
-#include <algorithm>
-#include <cassert>
+#include <dagger/types.h>
 
 
 namespace dagger {

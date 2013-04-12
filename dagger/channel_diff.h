@@ -1,8 +1,7 @@
 #pragma once
 
 
-#include <stdexcept>
-#include "channel.h"
+#include <dagger/channel.h>
 
 
 namespace dagger {

@@ -3,7 +3,11 @@
 
 #include <memory>
 #include <vector>
+#include <algorithm>
+#include <stdexcept>
+
 #include <cstdint>
+#include <cassert>
 
 
 namespace dagger {
