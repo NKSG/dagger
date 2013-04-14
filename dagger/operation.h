@@ -41,7 +41,28 @@ public:
 
 
 template<typename data>
-class unary_operation : public operation<data>
+class root : public operation<data>
+{
+public:
+    root(const data& d)
+      : m_data(d)
+    {
+    }
+
+public:
+    uint32_t render(data* d)
+    {
+        *d = m_data;
+        return 1;
+    }
+
+private:
+    data m_data;
+};
+
+
+template<typename data>
+class unary : public operation<data>
 {
 public:
     struct function
@@ -51,43 +72,23 @@ public:
     };
 
 public:
-    class cannot_connect_operation_error : public std::runtime_error
-    {
-    public:
-        cannot_connect_operation_error()
-          : runtime_error("cannot connect operation")
-        {
-        }
-    };
-    
-public:
-    unary_operation(operation<data>* parent, function* fn)
-      : m_parent(parent)
+    unary(operation<data>* parent, function* fn)
+      : m_parent(nullptr)
       , m_function(fn)
       , m_last_change(0)
       , m_last_parent_change(0)
     {
-        assert(parent != nullptr);
-    }
-
-    unary_operation(const data& d)
-      : m_parent(nullptr)
-      , m_function(nullptr)
-      , m_data(d)
-      , m_last_change(0)
-      , m_last_parent_change(0)
-    {
+        connect(parent);
     }
 
 public:
+    void update()
+    {
+        m_last_parent_change = 0;
+    }
+
     uint32_t render(data* d)
     {
-        if (m_parent == nullptr)
-        {
-            *d = m_data;
-            return 1;
-        }
-        
         uint32_t last_parent_change = m_parent->render(d);
         
         if (last_parent_change == m_last_parent_change)
@@ -110,11 +111,9 @@ public:
     {
         assert(parent != nullptr);
 
-        if (m_parent == nullptr)
-            throw cannot_connect_operation_error();
-
         m_parent = parent;
-        m_last_parent_change = 0;
+
+        update();
     }
 
 private:
@@ -125,15 +124,15 @@ private:
     
     function* m_function;
     
-    data      m_data;
     data_diff m_data_diff;
 
     uint32_t m_last_change;
     uint32_t m_last_parent_change;
 };
 
+
 template<typename data>
-class binary_operation : public operation<data>
+class binary : public operation<data>
 {
 public:
     struct function
@@ -143,17 +142,22 @@ public:
     };
 
 public:
-    binary_operation(operation<data>* parent1, operation<data>* parent2, function* fn)
-      : m_parent1(parent1)
-      , m_parent2(parent2)
+    binary(operation<data>* parent1, operation<data>* parent2, function* fn)
+      : m_parent1(nullptr)
+      , m_parent2(nullptr)
       , m_function(fn)
       , m_last_change(0)
     {
-        assert(parent1 != nullptr);
-        assert(parent2 != nullptr);
+        connect(parent1, parent2);
     }
 
 public:
+    void update()
+    {
+        m_last_parent1_change = 0;
+        m_last_parent1_change = 0;
+    }
+
     uint32_t render(data* d)
     {
         data d1, d2;
@@ -182,12 +186,12 @@ public:
     {
         assert(parent1 != nullptr);
         assert(parent2 != nullptr);
+        assert(parent1 != parent2);
 
         m_parent1 = parent1;
         m_parent2 = parent2;
-        
-        m_last_parent1_change = 0;
-        m_last_parent1_change = 0;
+
+        update();
     }
 
 private:

@@ -30,7 +30,7 @@ namespace dagger {
 namespace operations {
 
 
-struct alpha_rgb : public binary_operation<data::rgb>::function
+struct alpha_rgb : public binary<data::rgb>::function
 {
     channel r_a;
     channel g_a;

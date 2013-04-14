@@ -34,17 +34,20 @@ int main()
     data::rgb& i = std::get<0>(input);
     channel& alpha = std::get<1>(input);
     
-    unary_operation<data::rgb> o1_image(i);
-    unary_operation<data::rgb> o1_background(data::rgb(i.height(), i.width()));
+    root<data::rgb> o1_image(i);
+    root<data::rgb> o1_background(data::rgb(i.height(), i.width()));
     
     operations::alpha_rgb o2_alpha(alpha);
-    binary_operation<data::rgb> o2(&o1_image, &o1_background, &o2_alpha);
+    binary<data::rgb> o2(&o1_image, &o1_background, &o2_alpha);
 
     operations::gamma_rgb o3_gamma(0.4545);
-    unary_operation<data::rgb> o3(&o2, &o3_gamma);
+    unary<data::rgb> o3(&o2, &o3_gamma);
+
+    operations::gamma_rgb o4_gamma(2.2);
+    unary<data::rgb> o4(&o3, &o4_gamma);
 
     data::rgb result;
-    o3.render(&result);
+    o4.render(&result);
     
     image::save_png("test1.png", result);
     

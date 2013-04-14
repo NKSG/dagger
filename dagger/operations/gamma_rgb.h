@@ -29,7 +29,7 @@ namespace dagger {
 namespace operations {
 
 
-struct gamma_rgb : public unary_operation<data::rgb>::function
+struct gamma_rgb : public unary<data::rgb>::function
 {
     double r;
     double g;
