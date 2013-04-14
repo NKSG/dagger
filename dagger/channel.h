@@ -51,6 +51,15 @@ public:
         }
     };
     
+    class invalid_alpha_channel_error : public std::runtime_error
+    {
+    public:
+        invalid_alpha_channel_error()
+          : runtime_error("alpha channel not compatible data")
+        {
+        }
+    };
+    
 public:
     channel()
       : m_height(0)
@@ -91,6 +100,17 @@ public:
     data_t data()
     {
         return m_data;
+    }
+
+    static bool equal_dimensions(const channel& c1, const channel& c2)
+    {
+        if (c1.m_height != c2.m_height)
+            return false;
+
+        if (c1.m_width != c2.m_width)
+            return false;
+
+        return true;
     }
 
 public:
@@ -147,10 +167,7 @@ public:
         
         diff(const channel& c1, const channel& c2)
         {
-            if (c1.height() != c2.height())
-                throw different_channels_error();
-
-            if (c1.width() != c2.width())
+            if (equal_dimensions(c1, c2) == false)
                 throw different_channels_error();
 
             create_diff(c1, c2);
@@ -270,7 +287,7 @@ public:
 
             for (int32_t i = 0; i < m_image_size; i++)
             {
-                int32_t diff = c1_data[i] - c2_data[i];
+                int32_t diff = c2_data[i] - c1_data[i];
                 dest_data[i] = diff;
 
                 if (diff == 0)

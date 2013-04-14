@@ -19,24 +19,24 @@
  */
 
 #include <dagger/image/png.h>
+#include <dagger/operations/gamma.h>
 
 
 using namespace dagger;
 
 
-struct autolevels : public operation<data::rgb>::function
-{
-    data::rgb operator()(const data::rgb& source)
-    {
-        return data::rgb(source);
-    }
-};
-
-
 int main()
 {
-    auto i1 = image::load_png("test.png");
-    image::save_png("test1.png", std::get<0>(i1), std::get<1>(i1));
+    auto input = image::load_png("test.png");
+    operation<data::rgb> o1(std::get<0>(input));
+
+    operations::gamma_rgb o2_gamma(2.2);
+    operation<data::rgb> o2(&o1, &o2_gamma);
+
+    data::rgb result;
+    o2.render(&result);
+    
+    image::save_png("test1.png", result, std::get<1>(input));
     
     return 0;
 }

@@ -18,26 +18,47 @@
  *
  */
 
-#pragma once
-
-
-#include <dagger/algorithm/apply_alpha.h>
+#include <dagger/algorithm/gamma.h>
 #include <dagger/data/rgb.h>
 
 
 namespace dagger {
-namespace algorithm {
+namespace operations {
 
 
-data::rgb apply_alpha(const data::rgb& i1, const data::rgb& i2, const channel& alpha)
+struct gamma_rgb : public operation<data::rgb>::function
 {
-    data::rgb d;
+    double r;
+    double g;
+    double b;
     
-    d.r = apply_alpha(i1.r, i2.r, alpha);
-    d.g = apply_alpha(i1.g, i2.g, alpha);
-    d.b = apply_alpha(i1.b, i2.b, alpha);
+    gamma_rgb(double _r, double _g, double _b)
+      : r(_r)
+      , g(_g)
+      , b(_b)
+    {
+    }
 
-    return d;
-}
+    gamma_rgb(double g)
+      : gamma_rgb(g, g, g)
+    {
+    }
+    
+    gamma_rgb()
+      : gamma_rgb(1)
+    {
+    }
+    
+    data::rgb operator()(const data::rgb& source)
+    {
+        data::rgb d(source);
+        
+        d.r = algorithm::gamma(d.r, r);
+        d.g = algorithm::gamma(d.g, g);
+        d.b = algorithm::gamma(d.b, b);
+
+        return d;
+    }
+};
 
 }}

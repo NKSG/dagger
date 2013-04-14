@@ -20,12 +20,24 @@
 
 #pragma once
 
-#include <dagger/algorithm/alpha_rgb.h>
-#include <dagger/operation.h>
+
+#include <dagger/algorithm/alpha.h>
+#include <dagger/data/rgb.h>
 
 
 namespace dagger {
-namespace data {
+namespace algorithm {
 
+
+data::rgb alpha(const data::rgb& i1, const data::rgb& i2, const channel& a)
+{
+    data::rgb d;
+    
+    d.r = alpha(i1.r, i2.r, a);
+    d.g = alpha(i1.g, i2.g, a);
+    d.b = alpha(i1.b, i2.b, a);
+
+    return d;
+}
 
 }}

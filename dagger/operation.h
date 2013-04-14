@@ -38,20 +38,20 @@ public:
     };
 
 public:
-    class invalid_alpha_channel_error : public std::runtime_error
-    {
-    public:
-        invalid_alpha_channel_error()
-          : runtime_error("alpha channel not compatible data")
-        {
-        }
-    };
-    
     class cannot_connect_operation_error : public std::runtime_error
     {
     public:
         cannot_connect_operation_error()
           : runtime_error("cannot connect operation")
+        {
+        }
+    };
+    
+    class cannot_set_alpha_channel_error : public std::runtime_error
+    {
+    public:
+        cannot_set_alpha_channel_error()
+          : runtime_error("cannot set alpha channel")
         {
         }
     };
@@ -101,13 +101,13 @@ public:
     void set_alpha(const channel& alpha)
     {
         if (m_parent == nullptr)
-            throw invalid_alpha_channel_error();
+            throw cannot_set_alpha_channel_error();
 
         if (m_data_diff.height() != alpha.height())
-            throw invalid_alpha_channel_error();
+            throw channel::invalid_alpha_channel_error();
         
         if (m_data_diff.width() != alpha.width())
-            throw invalid_alpha_channel_error();
+            throw channel::invalid_alpha_channel_error();
         
         m_alpha = alpha;
         m_last_parent_change = 0;
@@ -130,15 +130,13 @@ private:
 private:
     void do_function(data* d)
     {
-        data tmp(d->height(), d->width());
-
         data r = m_function->operator()(*d);
-        r = algorithm::apply_alpha(r, *d, m_alpha);
+        r = algorithm::alpha(r, *d, m_alpha);
         
         m_last_change++;
         
         m_data_diff = data_diff(*d, r);
-        *d = tmp;
+        *d = r;
     }
 
 private:

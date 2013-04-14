@@ -89,10 +89,10 @@ void save_png(const std::string& file_name, const data::rgb& image, const channe
     if (alpha.empty() == false)
     {
         if (height != alpha.height())
-            throw operation<data::rgb>::invalid_alpha_channel_error();
+            throw channel::invalid_alpha_channel_error();
 
         if (width != alpha.width())
-            throw operation<data::rgb>::invalid_alpha_channel_error();
+            throw channel::invalid_alpha_channel_error();
 
         _a = alpha.data().get();
     }

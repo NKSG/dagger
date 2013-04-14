@@ -20,12 +20,36 @@
 
 #pragma once
 
-#include <dagger/algorithm/alpha_rgb.h>
-#include <dagger/operation.h>
+
+#include <dagger/channel.h>
 
 
 namespace dagger {
-namespace data {
+namespace algorithm {
 
+
+channel gamma(const channel& c, double g)
+{
+    if (c.empty() == true)
+        return channel();
+    
+    channel d(c.height(), c.width());
+    int32_t image_size = c.height() * c.width();
+
+    const int32_t* _c = c.data().get();
+    int32_t* _d = d.data().get();
+
+    for (int32_t i = 0; i < image_size; i++)
+    {
+        double c = _c[i];
+        
+        c /= channel::max_value;
+        c = pow(c, g) * channel::max_value;
+
+        _d[i] = static_cast<int32_t>(c);
+    }
+
+    return d;
+}
 
 }}
