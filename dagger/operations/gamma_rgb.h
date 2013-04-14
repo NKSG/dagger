@@ -18,15 +18,18 @@
  *
  */
 
-#include <dagger/algorithm/gamma.h>
+#pragma once
+
+#include <dagger/operation.h>
 #include <dagger/data/rgb.h>
+#include <dagger/algorithm/gamma.h>
 
 
 namespace dagger {
 namespace operations {
 
 
-struct gamma_rgb : public operation<data::rgb>::function
+struct gamma_rgb : public unary_operation<data::rgb>::function
 {
     double r;
     double g;

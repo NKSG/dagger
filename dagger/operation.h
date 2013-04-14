@@ -31,6 +31,19 @@ template<typename data>
 class operation
 {
 public:
+    virtual uint32_t render(data* d) = 0;
+    
+public:
+    virtual ~operation()
+    {
+    }
+};
+
+
+template<typename data>
+class unary_operation : public operation<data>
+{
+public:
     struct function
     {
         virtual ~function() {}
@@ -47,28 +60,19 @@ public:
         }
     };
     
-    class cannot_set_alpha_channel_error : public std::runtime_error
-    {
-    public:
-        cannot_set_alpha_channel_error()
-          : runtime_error("cannot set alpha channel")
-        {
-        }
-    };
-    
 public:
-    operation(operation* parent, function* fn)
-      : m_function(fn)
-      , m_parent(parent)
+    unary_operation(operation<data>* parent, function* fn)
+      : m_parent(parent)
+      , m_function(fn)
       , m_last_change(0)
       , m_last_parent_change(0)
     {
         assert(parent != nullptr);
     }
 
-    operation(const data& d)
-      : m_function(nullptr)
-      , m_parent(nullptr)
+    unary_operation(const data& d)
+      : m_parent(nullptr)
+      , m_function(nullptr)
       , m_data(d)
       , m_last_change(0)
       , m_last_parent_change(0)
@@ -86,34 +90,23 @@ public:
         
         uint32_t last_parent_change = m_parent->render(d);
         
-        if (last_parent_change > m_last_parent_change)
+        if (last_parent_change == m_last_parent_change)
         {
-            m_last_parent_change = last_parent_change;
-            
-            do_function(d);
+            m_data_diff.apply(d);
             return m_last_change;
         }
+
+        m_last_parent_change = last_parent_change;
+            
+        data r = m_function->operator()(*d);
+        m_data_diff = data_diff(*d, r);
         
-        m_data_diff.apply(d);
-        return m_last_change;
+        *d = r;
+        
+        return ++m_last_change;
     }
 
-    void set_alpha(const channel& alpha)
-    {
-        if (m_parent == nullptr)
-            throw cannot_set_alpha_channel_error();
-
-        if (m_data_diff.height() != alpha.height())
-            throw channel::invalid_alpha_channel_error();
-        
-        if (m_data_diff.width() != alpha.width())
-            throw channel::invalid_alpha_channel_error();
-        
-        m_alpha = alpha;
-        m_last_parent_change = 0;
-    }
-
-    void connect(operation* parent)
+    void connect(operation<data>* parent)
     {
         assert(parent != nullptr);
 
@@ -126,30 +119,88 @@ public:
 
 private:
     typedef typename data::diff data_diff;
-
-private:
-    void do_function(data* d)
-    {
-        data r = m_function->operator()(*d);
-        r = algorithm::alpha(r, *d, m_alpha);
-        
-        m_last_change++;
-        
-        m_data_diff = data_diff(*d, r);
-        *d = r;
-    }
-
-private:
-    function*  m_function;
-    operation* m_parent;
     
-    data    m_data;
-    channel m_alpha;
+private:
+    operation<data>* m_parent;
     
+    function* m_function;
+    
+    data      m_data;
     data_diff m_data_diff;
 
     uint32_t m_last_change;
     uint32_t m_last_parent_change;
+};
+
+template<typename data>
+class binary_operation : public operation<data>
+{
+public:
+    struct function
+    {
+        virtual ~function() {}
+        virtual data operator()(const data& source1, const data& source2) = 0;
+    };
+
+public:
+    binary_operation(operation<data>* parent1, operation<data>* parent2, function* fn)
+      : m_parent1(parent1)
+      , m_parent2(parent2)
+      , m_function(fn)
+      , m_last_change(0)
+    {
+        assert(parent1 != nullptr);
+        assert(parent2 != nullptr);
+    }
+
+public:
+    uint32_t render(data* d)
+    {
+        data d1, d2;
+        
+        uint32_t last_parent1_change = m_parent1->render(&d1);
+        uint32_t last_parent2_change = m_parent2->render(&d2);
+
+        bool needs_update = false;
+
+        needs_update |= last_parent1_change != m_last_parent1_change;
+        needs_update |= last_parent2_change != m_last_parent2_change;
+
+        if (needs_update == false)
+        {
+            *d = m_data;
+            return m_last_change;
+        }
+
+        m_data = m_function->operator()(d1, d2);
+        *d = m_data;
+            
+        return ++m_last_change;
+    }
+
+    void connect(operation<data>* parent1, operation<data>* parent2)
+    {
+        assert(parent1 != nullptr);
+        assert(parent2 != nullptr);
+
+        m_parent1 = parent1;
+        m_parent2 = parent2;
+        
+        m_last_parent1_change = 0;
+        m_last_parent1_change = 0;
+    }
+
+private:
+    operation<data>* m_parent1;
+    operation<data>* m_parent2;
+    
+    function* m_function;
+    
+    data      m_data;
+
+    uint32_t m_last_change;
+    uint32_t m_last_parent1_change;
+    uint32_t m_last_parent2_change;
 };
 
 }

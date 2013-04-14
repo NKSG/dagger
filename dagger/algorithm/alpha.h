@@ -54,9 +54,9 @@ channel alpha(const channel& c1, const channel& c2, const channel& a)
         int64_t v2 = _c2[i];
         int64_t va = _a[i];
 
-        assert(v1 > 0);
-        assert(v2 > 0);
-        assert(va > 0);
+        assert(v1 >= 0);
+        assert(v2 >= 0);
+        assert(va >= 0);
 
         _d[i] = (v1 * va + v2 * (channel::max_value - va)) / channel::max_value;
     }

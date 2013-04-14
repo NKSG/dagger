@@ -23,7 +23,7 @@
 #include <dagger/external/png/lodepng.h>
 
 #include <dagger/algorithm/scale_value.h>
-#include <dagger/rgb.h>
+#include <dagger/data/rgb.h>
 
 
 namespace dagger {

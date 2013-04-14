@@ -20,12 +20,49 @@
 
 #pragma once
 
-#include <dagger/algorithm/alpha_rgb.h>
+
 #include <dagger/operation.h>
+#include <dagger/data/rgb.h>
+#include <dagger/algorithm/alpha.h>
 
 
 namespace dagger {
-namespace data {
+namespace operations {
 
+
+struct alpha_rgb : public binary_operation<data::rgb>::function
+{
+    channel r_a;
+    channel g_a;
+    channel b_a;
+
+    alpha_rgb(const channel& _r_a, const channel& _g_a, const channel& _b_a)
+      : r_a(_r_a)
+      , g_a(_g_a)
+      , b_a(_b_a)
+    {
+    }
+    
+    alpha_rgb(const channel& _a)
+      : alpha_rgb(_a, _a, _a)
+    {
+    }
+
+    alpha_rgb()
+      : alpha_rgb(channel())
+    {
+    }
+    
+    data::rgb operator()(const data::rgb& d1, const data::rgb& d2)
+    {
+        data::rgb d;
+    
+        d.r = algorithm::alpha(d1.r, d2.r, r_a);
+        d.g = algorithm::alpha(d1.g, d2.g, g_a);
+        d.b = algorithm::alpha(d1.b, d2.b, b_a);
+
+        return d;
+    }
+};
 
 }}

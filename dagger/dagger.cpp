@@ -19,7 +19,9 @@
  */
 
 #include <dagger/image/png.h>
-#include <dagger/operations/gamma.h>
+
+#include <dagger/operations/gamma_rgb.h>
+#include <dagger/operations/alpha_rgb.h>
 
 
 using namespace dagger;
@@ -28,15 +30,24 @@ using namespace dagger;
 int main()
 {
     auto input = image::load_png("test.png");
-    operation<data::rgb> o1(std::get<0>(input));
+    
+    data::rgb& i = std::get<0>(input);
+    channel& alpha = std::get<1>(input);
+    
+    unary_operation<data::rgb> o1_image(i);
+    unary_operation<data::rgb> o1_background(data::rgb(i.height(), i.width()));
+    
+    operations::alpha_rgb o2_alpha(alpha);
+    binary_operation<data::rgb> o2(&o1_image, &o1_background, &o2_alpha);
 
-    operations::gamma_rgb o2_gamma(2.2);
-    operation<data::rgb> o2(&o1, &o2_gamma);
+    operations::gamma_rgb o3_gamma(0.4545);
+    unary_operation<data::rgb> o3(&o2, &o3_gamma);
 
     data::rgb result;
-    o2.render(&result);
+    o3.render(&result);
     
-    image::save_png("test1.png", result, std::get<1>(input));
+    image::save_png("test1.png", result);
     
     return 0;
 }
+
