@@ -20,12 +20,23 @@
 
 #pragma once
 
-#include <dagger/algorithm/apply_alpha_rgb.h>
-#include <dagger/operation.h>
+
+#include <dagger/channel.h>
 
 
 namespace dagger {
-namespace data {
+namespace algorithm {
+
+
+constexpr int32_t scale_source_value(int32_t source_value, int32_t source_scale)
+{
+    return (static_cast<int64_t>(source_value) * channel::max_value) / source_scale;
+}
+
+constexpr int32_t scale_destination_value(int32_t value, int32_t destination_scale)
+{
+    return (static_cast<int64_t>(value) * destination_scale) / channel::max_value;
+}
 
 
 }}
