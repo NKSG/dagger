@@ -20,45 +20,58 @@
 
 #pragma once
 
+
 #include <dagger/operation.h>
 #include <dagger/data/rgb.h>
-#include <dagger/algorithm/gamma.h>
+#include <dagger/algorithm/box_scale.h>
 
 
 namespace dagger {
 namespace operations {
 
 
-struct gamma_rgb : public unary<data::rgb>::function
+struct box_scale_rgb : public transform<data::rgb, data::rgb>::function
 {
-    double r;
-    double g;
-    double b;
+    int16_t new_width;
+    int16_t new_height;
     
-    gamma_rgb(double _r, double _g, double _b)
-      : r(_r)
-      , g(_g)
-      , b(_b)
+    double width_scale;
+    double height_scale;
+    
+    box_scale_rgb(int16_t _new_width, int16_t _new_height)
+      : new_width(_new_width)
+      , new_height(_new_height)
+      , width_scale(0)
+      , height_scale(0)
     {
     }
 
-    gamma_rgb(double g)
-      : gamma_rgb(g, g, g)
+    box_scale_rgb(double _width_scale, double _height_scale)
+      : new_width(0)
+      , new_height(0)
+      , width_scale(_width_scale)
+      , height_scale(_height_scale)
     {
     }
-    
-    gamma_rgb()
-      : gamma_rgb(1)
+
+    box_scale_rgb(double scale)
+      : box_scale_rgb(scale, scale)
     {
     }
     
     data::rgb operator()(const data::rgb& s)
     {
         data::rgb d;
-        
-        d.r = algorithm::gamma(s.r, r);
-        d.g = algorithm::gamma(s.g, g);
-        d.b = algorithm::gamma(s.b, b);
+
+        if (width_scale != 0)
+            new_width = s.width() * width_scale;
+
+        if (height_scale != 0)
+            new_height = s.height() * height_scale;
+    
+        d.r = algorithm::box_scale(s.r, new_width, new_height);
+        d.g = algorithm::box_scale(s.g, new_width, new_height);
+        d.b = algorithm::box_scale(s.b, new_width, new_height);
 
         return d;
     }

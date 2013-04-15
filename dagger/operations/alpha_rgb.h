@@ -53,13 +53,13 @@ struct alpha_rgb : public binary<data::rgb>::function
     {
     }
     
-    data::rgb operator()(const data::rgb& d1, const data::rgb& d2)
+    data::rgb operator()(const data::rgb& s1, const data::rgb& s2)
     {
         data::rgb d;
     
-        d.r = algorithm::alpha(d1.r, d2.r, r_a);
-        d.g = algorithm::alpha(d1.g, d2.g, g_a);
-        d.b = algorithm::alpha(d1.b, d2.b, b_a);
+        d.r = algorithm::alpha(s1.r, s2.r, r_a);
+        d.g = algorithm::alpha(s1.g, s2.g, g_a);
+        d.b = algorithm::alpha(s1.b, s2.b, b_a);
 
         return d;
     }

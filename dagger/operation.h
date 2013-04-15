@@ -207,4 +207,70 @@ private:
     uint32_t m_last_parent2_change;
 };
 
+template<typename data_source, typename data_destination>
+class transform : public operation<data_destination>
+{
+public:
+    struct function
+    {
+        virtual ~function() {}
+        virtual data_destination operator()(const data_source& source) = 0;
+    };
+
+public:
+    transform(operation<data_source>* parent, function* fn)
+      : m_parent(nullptr)
+      , m_function(fn)
+      , m_last_change(0)
+    {
+        connect(parent);
+    }
+
+public:
+    void update()
+    {
+        m_last_parent_change = 0;
+    }
+
+    uint32_t render(data_destination* d)
+    {
+        data_source tmp;
+        
+        uint32_t last_parent_change = m_parent->render(&tmp);
+
+        if (last_parent_change == m_last_parent_change)
+        {
+            *d = m_data;
+            return m_last_change;
+        }
+
+        m_last_parent_change = last_parent_change;
+            
+        m_data = m_function->operator()(tmp);
+        
+        *d = m_data;
+        
+        return ++m_last_change;
+    }
+
+    void connect(operation<data_source>* parent)
+    {
+        assert(parent != nullptr);
+
+        m_parent = parent;
+
+        update();
+    }
+
+private:
+    operation<data_source>* m_parent;
+    
+    function* m_function;
+    
+    data_destination m_data;
+
+    uint32_t m_last_change;
+    uint32_t m_last_parent_change;
+};
+
 }

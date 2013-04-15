@@ -33,13 +33,12 @@ channel gamma(const channel& c, double g)
     if (c.empty() == true)
         return channel();
     
-    channel d(c.height(), c.width());
-    int32_t image_size = c.height() * c.width();
+    channel d(c.width(), c.height());
 
     const int32_t* _c = c.data().get();
     int32_t* _d = d.data().get();
 
-    for (int32_t i = 0; i < image_size; i++)
+    for (int32_t i = 0; i < c.image_size(); i++)
     {
         double c = _c[i];
         

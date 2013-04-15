@@ -22,6 +22,7 @@
 
 #include <dagger/operations/gamma_rgb.h>
 #include <dagger/operations/alpha_rgb.h>
+#include <dagger/operations/box_scale_rgb.h>
 
 
 using namespace dagger;
@@ -33,21 +34,30 @@ int main()
     
     data::rgb& i = std::get<0>(input);
     channel& alpha = std::get<1>(input);
-    
+
+    ////////////////////////////////////////
     root<data::rgb> o1_image(i);
-    root<data::rgb> o1_background(data::rgb(i.height(), i.width()));
+    root<data::rgb> o1_background(data::rgb(i.width(), i.height()));
     
+    ////////////////////////////////////////
     operations::alpha_rgb o2_alpha(alpha);
     binary<data::rgb> o2(&o1_image, &o1_background, &o2_alpha);
 
+    ////////////////////////////////////////
     operations::gamma_rgb o3_gamma(0.4545);
     unary<data::rgb> o3(&o2, &o3_gamma);
 
+    ////////////////////////////////////////
     operations::gamma_rgb o4_gamma(2.2);
     unary<data::rgb> o4(&o3, &o4_gamma);
 
+    ////////////////////////////////////////
+    operations::box_scale_rgb o5_scale(0.5);
+    transform<data::rgb, data::rgb> o5(&o3, &o5_scale);
+
+    ////////////////////////////////////////
     data::rgb result;
-    o4.render(&result);
+    o5.render(&result);
     
     image::save_png("test1.png", result);
     

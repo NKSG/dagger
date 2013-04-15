@@ -35,21 +35,21 @@ struct rgb
     {
     }
 
-    rgb(int16_t height, int16_t width)
-      : r(height, width)
-      , g(height, width)
-      , b(height, width)
+    rgb(int16_t width, int16_t height)
+      : r(width, height)
+      , g(width, height)
+      , b(width, height)
     {
-    }
-
-    int16_t height() const
-    {
-        return r.height();
     }
 
     int16_t width() const
     {
         return r.width();
+    }
+
+    int16_t height() const
+    {
+        return r.height();
     }
 
     struct diff

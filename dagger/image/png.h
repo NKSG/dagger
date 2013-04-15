@@ -32,8 +32,8 @@ namespace image {
 
 std::tuple<data::rgb, channel> load_png(const std::string& file_name)
 {
-    uint32_t height = 0;
     uint32_t width = 0;
+    uint32_t height = 0;
 
     std::vector<uint8_t> image_data;
     
@@ -42,17 +42,15 @@ std::tuple<data::rgb, channel> load_png(const std::string& file_name)
     if (error != 0)
         throw std::runtime_error(file_name + ": " + lodepng_error_text(error));
 
-    data::rgb image(height, width);
-    channel alpha(height, width);
+    data::rgb image(width, height);
+    channel alpha(width, height);
 
-    int32_t image_size = height * width;
-    
     int32_t* _r = image.r.data().get();
     int32_t* _g = image.g.data().get();
     int32_t* _b = image.b.data().get();
     int32_t* _a = alpha.data().get();
 
-    for (int32_t i = 0; i < image_size; i++)
+    for (int32_t i = 0; i < image.r.image_size(); i++)
     {
         int32_t offset = i * 4;
         
@@ -72,13 +70,8 @@ std::tuple<data::rgb, channel> load_png(const std::string& file_name)
 
 void save_png(const std::string& file_name, const data::rgb& image, const channel& alpha)
 {
-    int32_t height = image.height();
-    int32_t width = image.width();
-
-    int32_t image_size = height * width;
-
     std::vector<uint8_t> image_data;
-    image_data.resize(image_size * 4);
+    image_data.resize(image.r.image_size() * 4);
 
     const int32_t* _r = image.r.data().get();
     const int32_t* _g = image.g.data().get();
@@ -88,16 +81,13 @@ void save_png(const std::string& file_name, const data::rgb& image, const channe
 
     if (alpha.empty() == false)
     {
-        if (height != alpha.height())
-            throw channel::invalid_alpha_channel_error();
-
-        if (width != alpha.width())
+        if (channel::equal_dimensions(image.r, alpha) == false)
             throw channel::invalid_alpha_channel_error();
 
         _a = alpha.data().get();
     }
 
-    for (int32_t i = 0; i < image_size; i++)
+    for (int32_t i = 0; i < image.r.image_size(); i++)
     {
         int32_t offset = i * 4;
 
@@ -115,7 +105,7 @@ void save_png(const std::string& file_name, const data::rgb& image, const channe
         image_data[offset+3] = algorithm::scale_destination_value(a, 255);
     }
 
-    uint32_t error = lodepng::encode(file_name, image_data, width, height);
+    uint32_t error = lodepng::encode(file_name, image_data, image.width(), image.height());
 
     if (error != 0)
         throw std::runtime_error(file_name + ": " + lodepng_error_text(error));    

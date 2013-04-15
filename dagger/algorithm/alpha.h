@@ -39,8 +39,7 @@ channel alpha(const channel& c1, const channel& c2, const channel& a)
     if (channel::equal_dimensions(c1, a) == false)
         throw channel::invalid_alpha_channel_error();
 
-    channel d(c1.height(), c1.width());
-    int32_t image_size = c1.height() * c1.width();
+    channel d(c1.width(), c1.height());
 
     const int32_t* _c1 = c1.data().get();
     const int32_t* _c2 = c2.data().get();
@@ -48,7 +47,7 @@ channel alpha(const channel& c1, const channel& c2, const channel& a)
 
     int32_t* _d = d.data().get();
         
-    for (int32_t i = 0; i < image_size; i++)
+    for (int32_t i = 0; i < c1.image_size(); i++)
     {
         int64_t v1 = _c1[i];
         int64_t v2 = _c2[i];
