@@ -24,6 +24,7 @@
 #include <dagger/algorithm/alpha_rgb.h>
 #include <dagger/algorithm/scale_rgb.h>
 #include <dagger/algorithm/kernel_rgb.h>
+#include <dagger/algorithm/invert_rgb.h>
 
 
 using namespace dagger;
@@ -49,7 +50,7 @@ int main()
     unary<data::rgb> o3(&o2, &o3_gamma);
 
     ////////////////////////////////////////
-    algorithm::scale::rgb o4_scale(0.3);
+    algorithm::scale::rgb o4_scale(0.5);
     transform<data::rgb, data::rgb> o4(&o3, &o4_scale);
 
     ////////////////////////////////////////
@@ -69,12 +70,16 @@ int main()
     unary<data::rgb> o5(&o4, &o5_kernel);
 
     ////////////////////////////////////////
-    algorithm::gamma::rgb o6_gamma(2.2);
-    unary<data::rgb> o6(&o5, &o6_gamma);
+    algorithm::invert::rgb o6_invert;
+    unary<data::rgb> o6(&o5, &o6_invert);
+
+    ////////////////////////////////////////
+    algorithm::gamma::rgb o7_gamma(2.2);
+    unary<data::rgb> o7(&o6, &o7_gamma);
 
     ////////////////////////////////////////
     data::rgb result;
-    o6.render(false, &result);
+    o7.render(false, &result);
     
     image::save_png("test1.png", result);
 

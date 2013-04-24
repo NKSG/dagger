@@ -30,7 +30,7 @@ namespace dagger {
 class channel
 {
 public:
-    const static int32_t max_value = 100000000;
+    const static int32_t max_value = 99999999;
     
 public:
     class different_channels_error : public std::runtime_error
