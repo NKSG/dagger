@@ -25,6 +25,8 @@
 #include <dagger/algorithm/scale_rgb.h>
 #include <dagger/algorithm/kernel_rgb.h>
 #include <dagger/algorithm/invert_rgb.h>
+#include <dagger/algorithm/channel_mixer_rgb.h>
+#include <dagger/algorithm/channel_mixer_grayscale.h>
 
 
 using namespace dagger;
@@ -74,12 +76,16 @@ int main()
     unary<data::rgb> o6(&o5, &o6_invert);
 
     ////////////////////////////////////////
-    algorithm::gamma::rgb o7_gamma(2.2);
-    unary<data::rgb> o7(&o6, &o7_gamma);
+    algorithm::channel_mixer::rgb o7_mixer(1, 0, 0, 0, 0, 0, 0, 0, 1);
+    unary<data::rgb> o7(&o6, &o7_mixer);
+
+    ////////////////////////////////////////
+    algorithm::gamma::rgb o8_gamma(2.2);
+    unary<data::rgb> o8(&o7, &o8_gamma);
 
     ////////////////////////////////////////
     data::rgb result;
-    o7.render(false, &result);
+    o8.render(false, &result);
     
     image::save_png("test1.png", result);
 

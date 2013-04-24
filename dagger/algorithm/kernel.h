@@ -29,10 +29,6 @@ namespace algorithm {
 namespace kernel {
 
 
-class matrix;
-channel calculate(const channel&, const matrix&, bool);
-
-
 class matrix
 {
 public:
@@ -73,9 +69,15 @@ public:
         return m_values.size();
     }
 
-    values_t values() const
+    std::vector<int64_t> values() const
     {
-        return m_values;
+        std::vector<int64_t> int_values;
+        int_values.resize(m_values.size());
+        
+        std::transform(m_values.begin(), m_values.end(), int_values.begin(),
+                       [](const double& v) {return static_cast<int64_t>(v * 1000);});
+
+        return int_values;
     }
 
     void set_value(int16_t x, int16_t y, double value)
@@ -128,25 +130,11 @@ private:
         m_height = height;
     }
 
-    std::vector<int64_t> int_values() const
-    {
-        std::vector<int64_t> int_values;
-        int_values.resize(m_values.size());
-        
-        std::transform(m_values.begin(), m_values.end(), int_values.begin(),
-                       [](const double& v) {return static_cast<int64_t>(v * 1000);});
-
-        return int_values;
-    }
-
 private:
     int16_t m_width;
     int16_t m_height;
 
     values_t m_values;
-
-private:
-    friend channel calculate(const channel& c, const matrix& k, bool normalize);
 };
 
 channel calculate(const channel& c, const matrix& k, bool normalize)
@@ -159,7 +147,7 @@ channel calculate(const channel& c, const matrix& k, bool normalize)
     channel d(c.width(), c.height());
     channel v(k.width(), k.height());
 
-    std::vector<int64_t> kernel = k.int_values();
+    std::vector<int64_t> kernel = k.values();
     
     int16_t width = c.width();
     int16_t height = c.height();
