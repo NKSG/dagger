@@ -30,11 +30,12 @@ namespace algorithm {
 
 channel alpha(const channel& c1, const channel& c2, const channel& a)
 {
+    assert(c1.empty() == false);
+    assert(c2.empty() == false);
+    assert(a.empty() == false);
+    
     if (channel::equal_dimensions(c1, c2) == false)
         throw channel::different_channels_error();
-
-    if (a.empty() == true)
-        return channel(c1);
 
     if (channel::equal_dimensions(c1, a) == false)
         throw channel::invalid_alpha_channel_error();
@@ -46,8 +47,10 @@ channel alpha(const channel& c1, const channel& c2, const channel& a)
     const int32_t* _a = a.data().get();
 
     int32_t* _d = d.data().get();
-        
-    for (int32_t i = 0; i < c1.image_size(); i++)
+    
+    int32_t image_size = c1.image_size();
+
+    for (int32_t i = 0; i < image_size; i++)
     {
         int64_t v1 = _c1[i];
         int64_t v2 = _c2[i];

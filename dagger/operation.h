@@ -31,10 +31,23 @@ template<typename data>
 class operation
 {
 public:
-    virtual uint32_t render(data* d) = 0;
-    
+    virtual uint32_t render(bool single_pass, data* d) = 0;
+
 public:
+    operation()
+    {
+    }
+    
     virtual ~operation()
+    {
+    }
+
+private:
+    operation(const operation<data>&)
+    {
+    }
+
+    operation<data>& operator=(const operation<data>&)
     {
     }
 };
@@ -50,7 +63,7 @@ public:
     }
 
 public:
-    uint32_t render(data* d)
+    uint32_t render(bool single_pass, data* d)
     {
         *d = m_data;
         return 1;
@@ -84,12 +97,22 @@ public:
 public:
     void update()
     {
+        m_data_diff = data_diff();
+        
         m_last_parent_change = 0;
     }
 
-    uint32_t render(data* d)
+    uint32_t render(bool single_pass, data* d)
     {
-        uint32_t last_parent_change = m_parent->render(d);
+        uint32_t last_parent_change = m_parent->render(single_pass, d);
+
+        if (single_pass == true)
+        {
+            update();
+            
+            *d = m_function->operator()(*d);
+            return ++m_last_change;
+        }
         
         if (last_parent_change == m_last_parent_change)
         {
@@ -97,9 +120,9 @@ public:
             return m_last_change;
         }
 
-        m_last_parent_change = last_parent_change;
-            
         data r = m_function->operator()(*d);
+
+        m_last_parent_change = last_parent_change;
         m_data_diff = data_diff(*d, r);
         
         *d = r;
@@ -154,17 +177,27 @@ public:
 public:
     void update()
     {
+        m_data = data();
+        
         m_last_parent1_change = 0;
         m_last_parent1_change = 0;
     }
 
-    uint32_t render(data* d)
+    uint32_t render(bool single_pass, data* d)
     {
         data d1, d2;
         
-        uint32_t last_parent1_change = m_parent1->render(&d1);
-        uint32_t last_parent2_change = m_parent2->render(&d2);
+        uint32_t last_parent1_change = m_parent1->render(single_pass, &d1);
+        uint32_t last_parent2_change = m_parent2->render(single_pass, &d2);
 
+        if (single_pass == true)
+        {
+            update();
+
+            *d = m_function->operator()(d1, d2);
+            return ++m_last_change;
+        }
+        
         bool needs_update = false;
 
         needs_update |= last_parent1_change != m_last_parent1_change;
@@ -229,14 +262,23 @@ public:
 public:
     void update()
     {
+        m_data = data_destination();
         m_last_parent_change = 0;
     }
 
-    uint32_t render(data_destination* d)
+    uint32_t render(bool single_pass, data_destination* d)
     {
         data_source tmp;
         
-        uint32_t last_parent_change = m_parent->render(&tmp);
+        uint32_t last_parent_change = m_parent->render(single_pass, &tmp);
+
+        if (single_pass == true)
+        {
+            update();
+
+            *d = m_function->operator()(tmp);
+            return ++m_last_change;
+        }
 
         if (last_parent_change == m_last_parent_change)
         {

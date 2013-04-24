@@ -30,33 +30,28 @@ namespace algorithm {
 
 channel box_scale(const channel& c, int16_t new_width, int16_t new_height)
 {
+    assert(c.empty() == false);
+    
     channel d(new_width, new_height);
     
-    if (c.empty() == true)
-        return d;
-
-    double width_scale = static_cast<double>(c.width()) / new_width;
-    double height_scale = static_cast<double>(c.height()) / new_height;
-
+    channel v(3, 3);
+    
+    int32_t* data = v.data().get();
+    
+    int16_t old_width = c.width();
+    int16_t old_height = c.height();
+    
     for (int16_t y = 0; y < new_height; y++)
     {
-        int16_t source_y = y * height_scale;
+        int16_t source_y = static_cast<int64_t>(y) * old_height / new_height;
         
         for (int16_t x = 0; x < new_width; x++)
         {
-            int16_t source_x = x * width_scale;
+            int16_t source_x = static_cast<int64_t>(x) * old_width / new_width;
 
-            int64_t value = 0;
+            v.view(c, source_x-1, source_y-1);
 
-            value += c.get_value(source_x-1, source_y-1, 0);
-            value += c.get_value(source_x+0, source_y-1, 0);
-            value += c.get_value(source_x+1, source_y-1, 0);
-            value += c.get_value(source_x-1, source_y+0, 0);
-            value += c.get_value(source_x+0, source_y+0, 0);
-            value += c.get_value(source_x+1, source_y+0, 0);
-            value += c.get_value(source_x-1, source_y+1, 0);
-            value += c.get_value(source_x+0, source_y+1, 0);
-            value += c.get_value(source_x+1, source_y+1, 0);
+            int64_t value = std::accumulate(data, data + 9, static_cast<int64_t>(0));
 
             d.set_value(x, y, value / 9);
         }

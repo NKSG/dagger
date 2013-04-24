@@ -31,14 +31,14 @@ namespace operations {
 
 struct gamma_rgb : public unary<data::rgb>::function
 {
-    double r;
-    double g;
-    double b;
+    double r_gamma;
+    double g_gamma;
+    double b_gamma;
     
-    gamma_rgb(double _r, double _g, double _b)
-      : r(_r)
-      , g(_g)
-      , b(_b)
+    gamma_rgb(double _r_gamma, double _g_gamma, double _b_gamma)
+      : r_gamma(_r_gamma)
+      , g_gamma(_g_gamma)
+      , b_gamma(_b_gamma)
     {
     }
 
@@ -47,18 +47,13 @@ struct gamma_rgb : public unary<data::rgb>::function
     {
     }
     
-    gamma_rgb()
-      : gamma_rgb(1)
-    {
-    }
-    
     data::rgb operator()(const data::rgb& s)
     {
         data::rgb d;
         
-        d.r = algorithm::gamma(s.r, r);
-        d.g = algorithm::gamma(s.g, g);
-        d.b = algorithm::gamma(s.b, b);
+        d.r = algorithm::gamma(s.r, r_gamma);
+        d.g = algorithm::gamma(s.g, g_gamma);
+        d.b = algorithm::gamma(s.b, b_gamma);
 
         return d;
     }

@@ -70,7 +70,7 @@ public:
     
     channel(uint16_t width, uint16_t height)
     {
-        create_channel(width, height);
+        create_channel(width, height, true);
     }
 
 public:
@@ -122,7 +122,6 @@ public:
     {
         assert(x >= 0 && x < m_width);
         assert(y >= 0 && y < m_height);
-        assert(value >= 0 && value <= max_value);
 
         int32_t* data = m_data.get();
         data[y * m_width + x] = value;
@@ -150,6 +149,35 @@ public:
         assert(y >= 0 && y < m_height);
 
         return get_value(x, y, 0);
+    }
+
+    void view(const channel& c, int16_t x, int16_t y) const
+    {
+        int16_t c_width = c.width();
+        int16_t c_height = c.height();
+
+        int32_t* data = m_data.get();
+        int32_t offset = 0;
+
+        const int32_t* source_data = c.data().get();
+
+        for (int16_t j = y; j < y + m_height; j++)
+        {
+            for (int16_t i = x; i < x + m_width; i++)
+            {
+                int32_t v = 0;
+
+                bool valid_position = true;
+
+                valid_position &= i >= 0 && i < c_width;
+                valid_position &= j >= 0 && j < c_height;
+
+                if (valid_position == true)
+                    v = source_data[j * c_width + i];
+                
+                data[offset++] = v;
+            }
+        }
     }
 
 public:
@@ -187,7 +215,7 @@ public:
         if (this == &other)
             return *this;
         
-        create_channel(other.m_width, other.m_height);
+        create_channel(other.m_width, other.m_height, false);
         std::copy_n(other.m_data.get(), m_image_size, m_data.get());
         
         return *this;
@@ -306,12 +334,11 @@ public:
             m_height = height;
         
             m_image_size = width * height;
-        
-            m_data.reset(new int32_t[m_image_size]);
-            std::fill_n(m_data.get(), m_image_size, 0);
 
-            m_bit_mask.resize(m_image_size);
+            m_bit_mask.resize(m_image_size);            
             std::fill_n(m_bit_mask.begin(), m_image_size, false);
+            
+            m_data.reset(new int32_t[m_image_size]);
         }
 
         void create_diff(const channel& c1, const channel& c2)
@@ -355,7 +382,7 @@ public:
     };
 
 private:
-    void create_channel(int16_t width, int16_t height)
+    void create_channel(int16_t width, int16_t height, bool init)
     {
         assert(width > 0);
         assert(height > 0);
@@ -366,6 +393,10 @@ private:
         m_image_size = height * width;
         
         m_data.reset(new int32_t[m_image_size]);
+
+        if (init == false)
+            return;
+        
         std::fill_n(m_data.get(), m_image_size, 0);
     }
 

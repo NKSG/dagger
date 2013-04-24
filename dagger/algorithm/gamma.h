@@ -30,22 +30,21 @@ namespace algorithm {
 
 channel gamma(const channel& c, double g)
 {
-    if (c.empty() == true)
-        return channel();
+    assert(c.empty() == false);
     
     channel d(c.width(), c.height());
 
     const int32_t* _c = c.data().get();
     int32_t* _d = d.data().get();
 
-    for (int32_t i = 0; i < c.image_size(); i++)
+    int32_t image_size = c.image_size();
+
+    for (int32_t i = 0; i < image_size; i++)
     {
         double c = _c[i];
-        
         c /= channel::max_value;
-        c = pow(c, g) * channel::max_value;
 
-        _d[i] = static_cast<int32_t>(c);
+        _d[i] = pow(c, g) * channel::max_value;
     }
 
     return d;
