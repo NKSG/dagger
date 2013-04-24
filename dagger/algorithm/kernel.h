@@ -49,7 +49,7 @@ public:
 
     matrix(int16_t width, int16_t height, const values_t& values)
     {
-        assert(values.size() == width * height);
+        assert(values.size() == static_cast<uint32_t>(width) * height);
         
         create_matrix(width, height);
         
@@ -111,6 +111,8 @@ public:
         m_height = other.m_height;
         
         m_values = std::move(other.m_values);
+
+        return *this;
     }
 
 private:
