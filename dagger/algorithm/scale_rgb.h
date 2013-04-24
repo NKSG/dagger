@@ -23,14 +23,15 @@
 
 #include <dagger/operation.h>
 #include <dagger/data/rgb.h>
-#include <dagger/algorithm/box_scale.h>
+#include <dagger/algorithm/scale.h>
 
 
 namespace dagger {
-namespace operations {
+namespace algorithm {
+namespace scale {
 
 
-struct box_scale_rgb : public transform<data::rgb, data::rgb>::function
+struct rgb : public transform<data::rgb, data::rgb>::function
 {
     int16_t new_width;
     int16_t new_height;
@@ -38,7 +39,7 @@ struct box_scale_rgb : public transform<data::rgb, data::rgb>::function
     double width_scale;
     double height_scale;
     
-    box_scale_rgb(int16_t _new_width, int16_t _new_height)
+    rgb(int16_t _new_width, int16_t _new_height)
       : new_width(_new_width)
       , new_height(_new_height)
       , width_scale(0)
@@ -46,7 +47,7 @@ struct box_scale_rgb : public transform<data::rgb, data::rgb>::function
     {
     }
 
-    box_scale_rgb(double _width_scale, double _height_scale)
+    rgb(double _width_scale, double _height_scale)
       : new_width(0)
       , new_height(0)
       , width_scale(_width_scale)
@@ -54,8 +55,8 @@ struct box_scale_rgb : public transform<data::rgb, data::rgb>::function
     {
     }
 
-    box_scale_rgb(double scale)
-      : box_scale_rgb(scale, scale)
+    rgb(double scale)
+      : rgb(scale, scale)
     {
     }
     
@@ -69,12 +70,12 @@ struct box_scale_rgb : public transform<data::rgb, data::rgb>::function
         if (height_scale != 0)
             new_height = s.height() * height_scale;
     
-        d.r = algorithm::box_scale(s.r, new_width, new_height);
-        d.g = algorithm::box_scale(s.g, new_width, new_height);
-        d.b = algorithm::box_scale(s.b, new_width, new_height);
+        d.r = calculate(s.r, new_width, new_height);
+        d.g = calculate(s.g, new_width, new_height);
+        d.b = calculate(s.b, new_width, new_height);
 
         return d;
     }
 };
 
-}}
+}}}

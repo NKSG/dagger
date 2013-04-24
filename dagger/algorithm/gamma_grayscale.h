@@ -20,8 +20,9 @@
 
 #pragma once
 
-
-#include <dagger/channel.h>
+#include <dagger/operation.h>
+#include <dagger/data/grayscale.h>
+#include <dagger/algorithm/gamma.h>
 
 
 namespace dagger {
@@ -29,24 +30,23 @@ namespace algorithm {
 namespace gamma {
 
 
-channel calculate(const channel& c, double g)
+struct grayscale : public unary<data::grayscale>::function
 {
-    assert(c.empty() == false);
+    double g_gamma;
     
-    channel d(c.width(), c.height());
-
-    const int32_t* _c = c.data().get();
-    int32_t* _d = d.data().get();
-
-    int32_t image_size = c.image_size();
-
-    for (int32_t i = 0; i < image_size; i++)
+    grayscale(double _g_gamma)
+      : g_gamma(_g_gamma)
     {
-        double c = static_cast<double>(_c[i]) / channel::max_value;
-        _d[i] = pow(c, g) * channel::max_value;
     }
 
-    return d;
-}
+    data::grayscale operator()(const data::grayscale& s)
+    {
+        data::grayscale d;
+        
+        d.g = calculate(s.g, g_gamma);
+
+        return d;
+    }
+};
 
 }}}

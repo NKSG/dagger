@@ -20,43 +20,45 @@
 
 #pragma once
 
-#include <dagger/operation.h>
-#include <dagger/data/rgb.h>
-#include <dagger/algorithm/gamma.h>
+
+#include <dagger/channel.h>
 
 
 namespace dagger {
-namespace operations {
+namespace algorithm {
+namespace scale {
 
 
-struct gamma_rgb : public unary<data::rgb>::function
+channel calculate(const channel& c, int16_t new_width, int16_t new_height)
 {
-    double r_gamma;
-    double g_gamma;
-    double b_gamma;
+    assert(c.empty() == false);
     
-    gamma_rgb(double _r_gamma, double _g_gamma, double _b_gamma)
-      : r_gamma(_r_gamma)
-      , g_gamma(_g_gamma)
-      , b_gamma(_b_gamma)
-    {
-    }
-
-    gamma_rgb(double g)
-      : gamma_rgb(g, g, g)
-    {
-    }
+    channel d(new_width, new_height);
     
-    data::rgb operator()(const data::rgb& s)
+    channel v(3, 3);
+    
+    int32_t* data = v.data().get();
+    
+    int16_t old_width = c.width();
+    int16_t old_height = c.height();
+    
+    for (int16_t y = 0; y < new_height; y++)
     {
-        data::rgb d;
+        int16_t source_y = static_cast<int64_t>(y) * old_height / new_height;
         
-        d.r = algorithm::gamma(s.r, r_gamma);
-        d.g = algorithm::gamma(s.g, g_gamma);
-        d.b = algorithm::gamma(s.b, b_gamma);
+        for (int16_t x = 0; x < new_width; x++)
+        {
+            int16_t source_x = static_cast<int64_t>(x) * old_width / new_width;
 
-        return d;
+            v.view(c, source_x-1, source_y-1);
+
+            int64_t value = std::accumulate(data, data + 9, static_cast<int64_t>(0));
+
+            d.set_value(x, y, value / 9);
+        }
     }
-};
 
-}}
+    return d;
+}
+
+}}}

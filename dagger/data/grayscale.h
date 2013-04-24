@@ -20,33 +20,54 @@
 
 #pragma once
 
-
 #include <dagger/channel.h>
 
 
 namespace dagger {
-namespace algorithm {
-namespace gamma {
+namespace data {
 
 
-channel calculate(const channel& c, double g)
+struct grayscale
 {
-    assert(c.empty() == false);
-    
-    channel d(c.width(), c.height());
+    channel g;
 
-    const int32_t* _c = c.data().get();
-    int32_t* _d = d.data().get();
-
-    int32_t image_size = c.image_size();
-
-    for (int32_t i = 0; i < image_size; i++)
+    grayscale()
     {
-        double c = static_cast<double>(_c[i]) / channel::max_value;
-        _d[i] = pow(c, g) * channel::max_value;
     }
 
-    return d;
-}
+    grayscale(int16_t width, int16_t height)
+      : g(width, height)
+    {
+    }
 
-}}}
+    int16_t width() const
+    {
+        return g.width();
+    }
+
+    int16_t height() const
+    {
+        return g.height();
+    }
+
+    struct diff
+    {
+        channel::diff g;
+
+        diff()
+        {
+        }
+
+        diff(const grayscale& i1, const grayscale& i2)
+          : g(i1.g, i2.g)
+        {
+        }
+
+        void apply(grayscale* d)
+        {
+            g.apply(&d->g);
+        }
+    };
+};
+
+}}

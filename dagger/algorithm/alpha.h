@@ -26,9 +26,10 @@
 
 namespace dagger {
 namespace algorithm {
+namespace alpha {
 
 
-channel alpha(const channel& c1, const channel& c2, const channel& a)
+channel calculate(const channel& c1, const channel& c2, const channel& a)
 {
     assert(c1.empty() == false);
     assert(c2.empty() == false);
@@ -66,4 +67,4 @@ channel alpha(const channel& c1, const channel& c2, const channel& a)
     return d;
 }
 
-}}
+}}}

@@ -21,43 +21,35 @@
 #pragma once
 
 
-#include <dagger/channel.h>
+#include <dagger/operation.h>
+#include <dagger/data/grayscale.h>
+#include <dagger/algorithm/kernel.h>
 
 
 namespace dagger {
 namespace algorithm {
+namespace kernel {
 
-
-channel box_scale(const channel& c, int16_t new_width, int16_t new_height)
+struct grayscale : public unary<data::grayscale>::function
 {
-    assert(c.empty() == false);
-    
-    channel d(new_width, new_height);
-    
-    channel v(3, 3);
-    
-    int32_t* data = v.data().get();
-    
-    int16_t old_width = c.width();
-    int16_t old_height = c.height();
-    
-    for (int16_t y = 0; y < new_height; y++)
+    matrix g_kernel;
+
+    bool normalize;
+
+    grayscale(const matrix& _g_kernel, bool _normalize)
+      : g_kernel(_g_kernel)
+      , normalize(_normalize)
     {
-        int16_t source_y = static_cast<int64_t>(y) * old_height / new_height;
-        
-        for (int16_t x = 0; x < new_width; x++)
-        {
-            int16_t source_x = static_cast<int64_t>(x) * old_width / new_width;
-
-            v.view(c, source_x-1, source_y-1);
-
-            int64_t value = std::accumulate(data, data + 9, static_cast<int64_t>(0));
-
-            d.set_value(x, y, value / 9);
-        }
     }
+    
+    data::grayscale operator()(const data::grayscale& s)
+    {
+        data::grayscale d;
+    
+        d.g = calculate(s.g, g_kernel, normalize);
 
-    return d;
-}
+        return d;
+    }
+};
 
-}}
+}}}

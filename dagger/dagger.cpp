@@ -20,10 +20,10 @@
 
 #include <dagger/image/png.h>
 
-#include <dagger/operations/gamma_rgb.h>
-#include <dagger/operations/alpha_rgb.h>
-#include <dagger/operations/box_scale_rgb.h>
-#include <dagger/operations/kernel_rgb.h>
+#include <dagger/algorithm/gamma_rgb.h>
+#include <dagger/algorithm/alpha_rgb.h>
+#include <dagger/algorithm/scale_rgb.h>
+#include <dagger/algorithm/kernel_rgb.h>
 
 
 using namespace dagger;
@@ -41,35 +41,35 @@ int main()
     root<data::rgb> o1_background(data::rgb(i.width(), i.height()));
     
     ////////////////////////////////////////
-    operations::alpha_rgb o2_alpha(alpha);
+    algorithm::alpha::rgb o2_alpha(alpha);
     binary<data::rgb> o2(&o1_image, &o1_background, &o2_alpha);
 
     ////////////////////////////////////////
-    operations::gamma_rgb o3_gamma(0.4545);
+    algorithm::gamma::rgb o3_gamma(0.4545);
     unary<data::rgb> o3(&o2, &o3_gamma);
 
     ////////////////////////////////////////
-    operations::box_scale_rgb o4_scale(0.3);
+    algorithm::scale::rgb o4_scale(0.3);
     transform<data::rgb, data::rgb> o4(&o3, &o4_scale);
 
     ////////////////////////////////////////
-    channel test_kernel(3, 3);
+    algorithm::kernel::matrix test_kernel(3, 3);
     
-    test_kernel.set_value(0, 0, 1000);
-    test_kernel.set_value(1, 0, 1000);
-    test_kernel.set_value(2, 0, 1000);
-    test_kernel.set_value(0, 1, 1000);
-    test_kernel.set_value(1, 1, 1000);
-    test_kernel.set_value(2, 1, 1000);
-    test_kernel.set_value(0, 2, 1000);
-    test_kernel.set_value(1, 2, 1000);
-    test_kernel.set_value(2, 2, 1000);
+    test_kernel.set_value(0, 0, 1);
+    test_kernel.set_value(1, 0, 1);
+    test_kernel.set_value(2, 0, 1);
+    test_kernel.set_value(0, 1, 1);
+    test_kernel.set_value(1, 1, 1);
+    test_kernel.set_value(2, 1, 1);
+    test_kernel.set_value(0, 2, 1);
+    test_kernel.set_value(1, 2, 1);
+    test_kernel.set_value(2, 2, 1);
     
-    operations::kernel_rgb o5_kernel(test_kernel, true);
+    algorithm::kernel::rgb o5_kernel(test_kernel, true);
     unary<data::rgb> o5(&o4, &o5_kernel);
 
     ////////////////////////////////////////
-    operations::gamma_rgb o6_gamma(2.2);
+    algorithm::gamma::rgb o6_gamma(2.2);
     unary<data::rgb> o6(&o5, &o6_gamma);
 
     ////////////////////////////////////////

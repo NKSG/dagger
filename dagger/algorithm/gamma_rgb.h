@@ -20,44 +20,44 @@
 
 #pragma once
 
-
 #include <dagger/operation.h>
 #include <dagger/data/rgb.h>
-#include <dagger/algorithm/alpha.h>
+#include <dagger/algorithm/gamma.h>
 
 
 namespace dagger {
-namespace operations {
+namespace algorithm {
+namespace gamma {
 
 
-struct alpha_rgb : public binary<data::rgb>::function
+struct rgb : public unary<data::rgb>::function
 {
-    channel r_alpha;
-    channel g_alpha;
-    channel b_alpha;
+    double r_gamma;
+    double g_gamma;
+    double b_gamma;
+    
+    rgb(double _r_gamma, double _g_gamma, double _b_gamma)
+      : r_gamma(_r_gamma)
+      , g_gamma(_g_gamma)
+      , b_gamma(_b_gamma)
+    {
+    }
 
-    alpha_rgb(const channel& _r_alpha, const channel& _g_alpha, const channel& _b_alpha)
-      : r_alpha(_r_alpha)
-      , g_alpha(_g_alpha)
-      , b_alpha(_b_alpha)
+    rgb(double g)
+      : rgb(g, g, g)
     {
     }
     
-    alpha_rgb(const channel& _alpha)
-      : alpha_rgb(_alpha, _alpha, _alpha)
-    {
-    }
-
-    data::rgb operator()(const data::rgb& s1, const data::rgb& s2)
+    data::rgb operator()(const data::rgb& s)
     {
         data::rgb d;
-    
-        d.r = algorithm::alpha(s1.r, s2.r, r_alpha);
-        d.g = algorithm::alpha(s1.g, s2.g, g_alpha);
-        d.b = algorithm::alpha(s1.b, s2.b, b_alpha);
+        
+        d.r = calculate(s.r, r_gamma);
+        d.g = calculate(s.g, g_gamma);
+        d.b = calculate(s.b, b_gamma);
 
         return d;
     }
 };
 
-}}
+}}}

@@ -21,32 +21,47 @@
 #pragma once
 
 
-#include <dagger/channel.h>
+#include <dagger/operation.h>
+#include <dagger/data/rgb.h>
+#include <dagger/algorithm/kernel.h>
 
 
 namespace dagger {
 namespace algorithm {
-namespace gamma {
+namespace kernel {
 
 
-channel calculate(const channel& c, double g)
+struct rgb : public unary<data::rgb>::function
 {
-    assert(c.empty() == false);
-    
-    channel d(c.width(), c.height());
+    matrix r_kernel;
+    matrix g_kernel;
+    matrix b_kernel;
 
-    const int32_t* _c = c.data().get();
-    int32_t* _d = d.data().get();
+    bool normalize;
 
-    int32_t image_size = c.image_size();
-
-    for (int32_t i = 0; i < image_size; i++)
+    rgb(const matrix& _r_kernel, const matrix& _g_kernel, const matrix& _b_kernel, bool _normalize)
+      : r_kernel(_r_kernel)
+      , g_kernel(_g_kernel)
+      , b_kernel(_b_kernel)
+      , normalize(_normalize)
     {
-        double c = static_cast<double>(_c[i]) / channel::max_value;
-        _d[i] = pow(c, g) * channel::max_value;
+    }
+    
+    rgb(const matrix& _kernel, bool _normalize)
+      : rgb(_kernel, _kernel, _kernel, _normalize)
+    {
     }
 
-    return d;
-}
+    data::rgb operator()(const data::rgb& s)
+    {
+        data::rgb d;
+    
+        d.r = calculate(s.r, r_kernel, normalize);
+        d.g = calculate(s.g, g_kernel, normalize);
+        d.b = calculate(s.b, b_kernel, normalize);
+
+        return d;
+    }
+};
 
 }}}

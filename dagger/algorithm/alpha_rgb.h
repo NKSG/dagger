@@ -23,44 +23,42 @@
 
 #include <dagger/operation.h>
 #include <dagger/data/rgb.h>
-#include <dagger/algorithm/kernel.h>
+#include <dagger/algorithm/alpha.h>
 
 
 namespace dagger {
-namespace operations {
+namespace algorithm {
+namespace alpha {
 
 
-struct kernel_rgb : public unary<data::rgb>::function
+struct rgb : public binary<data::rgb>::function
 {
-    channel r_kernel;
-    channel g_kernel;
-    channel b_kernel;
+    channel r_alpha;
+    channel g_alpha;
+    channel b_alpha;
 
-    bool normalize;
-
-    kernel_rgb(const channel& _r_kernel, const channel& _g_kernel, const channel& _b_kernel, bool _normalize)
-      : r_kernel(_r_kernel)
-      , g_kernel(_g_kernel)
-      , b_kernel(_b_kernel)
-      , normalize(_normalize)
+    rgb(const channel& _r_alpha, const channel& _g_alpha, const channel& _b_alpha)
+      : r_alpha(_r_alpha)
+      , g_alpha(_g_alpha)
+      , b_alpha(_b_alpha)
     {
     }
     
-    kernel_rgb(const channel& _kernel, bool _normalize)
-      : kernel_rgb(_kernel, _kernel, _kernel, _normalize)
+    rgb(const channel& _alpha)
+      : rgb(_alpha, _alpha, _alpha)
     {
     }
 
-    data::rgb operator()(const data::rgb& s)
+    data::rgb operator()(const data::rgb& s1, const data::rgb& s2)
     {
         data::rgb d;
     
-        d.r = algorithm::kernel(s.r, r_kernel, normalize);
-        d.g = algorithm::kernel(s.g, g_kernel, normalize);
-        d.b = algorithm::kernel(s.b, b_kernel, normalize);
+        d.r = calculate(s1.r, s2.r, r_alpha);
+        d.g = calculate(s1.g, s2.g, g_alpha);
+        d.b = calculate(s1.b, s2.b, b_alpha);
 
         return d;
     }
 };
 
-}}
+}}}
