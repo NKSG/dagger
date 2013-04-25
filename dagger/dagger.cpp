@@ -21,10 +21,15 @@
 #include <dagger/image/png.h>
 
 #include <dagger/algorithm/gamma_rgb.h>
+#include <dagger/algorithm/gamma_grayscale.h>
 #include <dagger/algorithm/alpha_rgb.h>
+#include <dagger/algorithm/alpha_grayscale.h>
 #include <dagger/algorithm/scale_rgb.h>
+#include <dagger/algorithm/scale_grayscale.h>
 #include <dagger/algorithm/kernel_rgb.h>
+#include <dagger/algorithm/kernel_grayscale.h>
 #include <dagger/algorithm/invert_rgb.h>
+#include <dagger/algorithm/invert_grayscale.h>
 #include <dagger/algorithm/channel_mixer_rgb.h>
 #include <dagger/algorithm/channel_mixer_grayscale.h>
 
@@ -44,7 +49,8 @@ int main()
     root<data::rgb> o1_background(data::rgb(i.width(), i.height()));
     
     ////////////////////////////////////////
-    algorithm::alpha::rgb o2_alpha(alpha);
+    algorithm::alpha::from_channel bla(alpha);
+    algorithm::alpha::rgb<algorithm::alpha::from_values> o2_alpha(0);
     binary<data::rgb> o2(&o1_image, &o1_background, &o2_alpha);
 
     ////////////////////////////////////////

@@ -29,6 +29,54 @@ namespace algorithm {
 namespace alpha {
 
 
+int32_t calculate(int32_t v1, int32_t v2, int32_t va)
+{
+    int64_t v = 0;
+
+    v += static_cast<int64_t>(v1) * va;
+    v += static_cast<int64_t>(v2) * (channel::max_value - va);
+    v /= channel::max_value;
+    
+    assert(v >= 0 && v <= channel::max_value);
+        
+    return v;
+}
+
+
+channel calculate(const channel& c1, const channel& c2, int32_t a)
+{
+    assert(c1.empty() == false);
+    assert(c2.empty() == false);
+
+    assert(a >= 0 && a <= channel::max_value);
+
+    if (channel::equal_dimensions(c1, c2) == false)
+        throw channel::different_channels_error();
+
+    channel d(c1.width(), c1.height());
+
+    const int32_t* _c1 = c1.data().get();
+    const int32_t* _c2 = c2.data().get();
+
+    int32_t* _d = d.data().get();
+    
+    int32_t image_size = c1.image_size();
+
+    for (int32_t i = 0; i < image_size; i++)
+    {
+        int64_t v1 = _c1[i];
+        int64_t v2 = _c2[i];
+
+        assert(v1 >= 0 && v1 <= channel::max_value);
+        assert(v2 >= 0 && v2 <= channel::max_value);
+
+        _d[i] = calculate(v1, v2, a);
+    }
+
+    return d;
+}
+
+
 channel calculate(const channel& c1, const channel& c2, const channel& a)
 {
     assert(c1.empty() == false);
@@ -53,15 +101,15 @@ channel calculate(const channel& c1, const channel& c2, const channel& a)
 
     for (int32_t i = 0; i < image_size; i++)
     {
-        int64_t v1 = _c1[i];
-        int64_t v2 = _c2[i];
-        int64_t va = _a[i];
+        int32_t v1 = _c1[i];
+        int32_t v2 = _c2[i];
+        int32_t va = _a[i];
 
-        assert(v1 >= 0);
-        assert(v2 >= 0);
-        assert(va >= 0);
+        assert(v1 >= 0 && v1 <= channel::max_value);
+        assert(v2 >= 0 && v2 <= channel::max_value);
+        assert(va >= 0 && v1 <= channel::max_value);
 
-        _d[i] = (v1 * va + v2 * (channel::max_value - va)) / channel::max_value;
+        _d[i] = calculate(v1, v2, va);
     }
 
     return d;

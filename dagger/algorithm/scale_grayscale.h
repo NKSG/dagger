@@ -60,7 +60,7 @@ struct grayscale : public transform<data::grayscale, data::grayscale>::function
     {
     }
     
-    data::gray operator()(const data::grayscale& s)
+    data::grayscale operator()(const data::grayscale& s)
     {
         data::grayscale d;
 
@@ -70,7 +70,7 @@ struct grayscale : public transform<data::grayscale, data::grayscale>::function
         if (height_scale != 0)
             new_height = s.height() * height_scale;
     
-        d.g = algorithm::scale(s.g, new_width, new_height);
+        d.g = scale::calculate(s.g, new_width, new_height);
 
         return d;
     }

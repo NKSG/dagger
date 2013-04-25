@@ -22,7 +22,7 @@
 
 #include <dagger/external/png/lodepng.h>
 
-#include <dagger/algorithm/scale_value.h>
+#include <dagger/algorithm/value.h>
 #include <dagger/data/rgb.h>
 
 
@@ -59,10 +59,10 @@ std::tuple<data::rgb, channel> load_png(const std::string& file_name)
         int32_t b = image_data[offset+2];
         int32_t a = image_data[offset+3];
 
-        _r[i] = algorithm::scale_source_value(r, 255);
-        _g[i] = algorithm::scale_source_value(g, 255);
-        _b[i] = algorithm::scale_source_value(b, 255);
-        _a[i] = algorithm::scale_source_value(a, 255);
+        _r[i] = algorithm::value::calculate_source_value(r, 255);
+        _g[i] = algorithm::value::calculate_source_value(g, 255);
+        _b[i] = algorithm::value::calculate_source_value(b, 255);
+        _a[i] = algorithm::value::calculate_source_value(a, 255);
     }
 
     return std::make_tuple(image, alpha);
@@ -99,10 +99,10 @@ void save_png(const std::string& file_name, const data::rgb& image, const channe
         if (_a != nullptr)
             a = _a[i];
 
-        image_data[offset+0] = algorithm::scale_destination_value(r, 255);
-        image_data[offset+1] = algorithm::scale_destination_value(g, 255);
-        image_data[offset+2] = algorithm::scale_destination_value(b, 255);
-        image_data[offset+3] = algorithm::scale_destination_value(a, 255);
+        image_data[offset+0] = algorithm::value::calculate_destination_value(r, 255);
+        image_data[offset+1] = algorithm::value::calculate_destination_value(g, 255);
+        image_data[offset+2] = algorithm::value::calculate_destination_value(b, 255);
+        image_data[offset+3] = algorithm::value::calculate_destination_value(a, 255);
     }
 
     uint32_t error = lodepng::encode(file_name, image_data, image.width(), image.height());

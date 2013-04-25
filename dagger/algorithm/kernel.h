@@ -137,6 +137,27 @@ private:
     values_t m_values;
 };
 
+
+int32_t calculate(const int32_t* data, int32_t size, const std::vector<int64_t>& kernel, bool normalize)
+{
+    int64_t v = 0;
+    
+    v = std::inner_product(data, data+size, kernel.begin(), static_cast<int64_t>(0));
+            
+    v /= 1000;
+            
+    if (normalize == true)
+        v /= size;
+            
+    v = std::min(v, static_cast<int64_t>(channel::max_value));
+    v = std::max(v, static_cast<int64_t>(0));
+
+    assert(v >= 0 && v <= channel::max_value);
+
+    return v;
+}
+
+
 channel calculate(const channel& c, const matrix& k, bool normalize)
 {
     assert(c.empty() == false);
@@ -158,23 +179,16 @@ channel calculate(const channel& c, const matrix& k, bool normalize)
     const int32_t* data = v.data().get();
     int32_t size = kernel.size();
 
+    int32_t* _d = d.data().get();
+    int32_t offset = 0;
+
     for (int16_t y = 0; y < height; y++)
     {
         for (int16_t x = 0; x < width; x++)
         {
             v.view(c, x-x_offset, y-y_offset);
-
-            int64_t value = std::inner_product(data, data+size, kernel.begin(), static_cast<int64_t>(0));
             
-            value /= 1000;
-            
-            if (normalize == true)
-                value /= size;
-            
-            value = std::min(value, static_cast<int64_t>(channel::max_value));
-            value = std::max(value, static_cast<int64_t>(0));
-
-            d.set_value(x, y, value);
+            _d[offset++] = calculate(data, size, kernel, normalize);
         }
     }
 

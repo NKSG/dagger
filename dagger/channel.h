@@ -30,7 +30,7 @@ namespace dagger {
 class channel
 {
 public:
-    const static int32_t max_value = 99999999;
+    static const int32_t max_value = 99999999;
     
 public:
     class different_channels_error : public std::runtime_error
@@ -176,6 +176,8 @@ public:
 
                 if (valid_position == true)
                     v = source_data[j * c_width + i];
+
+                assert(v >= 0 && v <= max_value);
                 
                 data[offset++] = v;
             }

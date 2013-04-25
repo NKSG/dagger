@@ -29,6 +29,16 @@ namespace algorithm {
 namespace invert {
 
 
+int32_t calculate(int32_t v)
+{
+    v = channel::max_value - v;
+
+    assert(v >= 0 && v <= channel::max_value);
+
+    return v;
+}
+
+
 channel calculate(const channel& c)
 {
     assert(c.empty() == false);
@@ -42,7 +52,11 @@ channel calculate(const channel& c)
 
     for (int32_t i = 0; i < image_size; i++)
     {
-        _d[i] = channel::max_value - _c[i];
+        int32_t v = _c[i];
+        
+        assert(v >= 0 && v <= channel::max_value);
+        
+        _d[i] = calculate(v);
     }
 
     return d;

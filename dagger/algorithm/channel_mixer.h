@@ -29,6 +29,24 @@ namespace algorithm {
 namespace channel_mixer {
 
 
+int32_t calculate(int32_t v1, int32_t v1_into,
+                  int32_t v2, int32_t v2_into,
+                  int32_t v3, int32_t v3_into)
+{
+        int64_t v = 0;
+
+        v += std::max(static_cast<int64_t>(v1) * v1_into, static_cast<int64_t>(0));
+        v += std::max(static_cast<int64_t>(v2) * v2_into, static_cast<int64_t>(0));
+        v += std::max(static_cast<int64_t>(v3) * v3_into, static_cast<int64_t>(0));
+
+        v /= 1000;
+
+        assert(v >= 0 && v <= channel::max_value);
+
+        return v;
+}
+
+
 channel calculate(const channel& c1, double c1_into_d,
                   const channel& c2, double c2_into_d,
                   const channel& c3, double c3_into_d)
@@ -53,21 +71,21 @@ channel calculate(const channel& c1, double c1_into_d,
 
     int32_t image_size = c1.image_size();
 
-    int64_t c1_d = c1_into_d * 1000;
-    int64_t c2_d = c2_into_d * 1000;
-    int64_t c3_d = c3_into_d * 1000;
+    int32_t v1_into = c1_into_d * 1000;
+    int32_t v2_into = c2_into_d * 1000;
+    int32_t v3_into = c3_into_d * 1000;
 
     for (int32_t i = 0; i < image_size; i++)
     {
-        int64_t value = 0;
+        int32_t v1 = _c1[i];
+        int32_t v2 = _c2[i];
+        int32_t v3 = _c3[i];
 
-        value += std::max(_c1[i] * c1_d, static_cast<int64_t>(0));
-        value += std::max(_c2[i] * c2_d, static_cast<int64_t>(0));
-        value += std::max(_c3[i] * c3_d, static_cast<int64_t>(0));
+        assert(v1 >= 0 && v1 <= channel::max_value);
+        assert(v2 >= 0 && v2 <= channel::max_value);
+        assert(v3 >= 0 && v3 <= channel::max_value);
 
-        value /= 1000;
-
-        _d[i] = std::min(static_cast<int32_t>(value), channel::max_value);
+        _d[i] = calculate(v1, v1_into, v2, v2_into, v3, v3_into);
     }
 
     return d;

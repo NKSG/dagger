@@ -29,6 +29,18 @@ namespace algorithm {
 namespace scale {
 
 
+int32_t calculate(const int32_t* data, int32_t size)
+{
+    int64_t v = 0;
+
+    v += std::accumulate(data, data + size, static_cast<int64_t>(0));
+    v /= size;
+
+    assert(v >= 0 && v <= channel::max_value);
+
+    return v;
+}
+
 channel calculate(const channel& c, int16_t new_width, int16_t new_height)
 {
     assert(c.empty() == false);
@@ -41,6 +53,9 @@ channel calculate(const channel& c, int16_t new_width, int16_t new_height)
     
     int16_t old_width = c.width();
     int16_t old_height = c.height();
+
+    int32_t* _d = d.data().get();
+    int32_t offset = 0;
     
     for (int16_t y = 0; y < new_height; y++)
     {
@@ -52,9 +67,7 @@ channel calculate(const channel& c, int16_t new_width, int16_t new_height)
 
             v.view(c, source_x-1, source_y-1);
 
-            int64_t value = std::accumulate(data, data + 9, static_cast<int64_t>(0));
-
-            d.set_value(x, y, value / 9);
+            _d[offset++] = calculate(data, 9);
         }
     }
 

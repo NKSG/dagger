@@ -26,17 +26,20 @@
 
 namespace dagger {
 namespace algorithm {
+namespace value {
 
-
-constexpr int32_t scale_source_value(int32_t source_value, int32_t source_scale)
+int32_t calculate_source_value(int32_t source_value, int32_t source_scale)
 {
+    assert(source_value >= 0 && source_value <= source_scale);
+    
     return (static_cast<int64_t>(source_value) * channel::max_value) / source_scale;
 }
 
-constexpr int32_t scale_destination_value(int32_t value, int32_t destination_scale)
+int32_t calculate_destination_value(int32_t value, int32_t destination_scale)
 {
+    assert(value >= 0 && value <= channel::max_value);
+    
     return (static_cast<int64_t>(value) * destination_scale) / channel::max_value;
 }
 
-
-}}
+}}}

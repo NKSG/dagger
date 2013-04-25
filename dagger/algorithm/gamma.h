@@ -29,6 +29,19 @@ namespace algorithm {
 namespace gamma {
 
 
+int32_t calculate(int32_t v, double g)
+{
+    double _v = static_cast<double>(v) / channel::max_value;
+    _v = pow(_v, g) * channel::max_value;
+
+    v = static_cast<int32_t>(_v);
+
+    assert(v >= 0 && v <= channel::max_value);
+    
+    return v;
+}
+
+
 channel calculate(const channel& c, double g)
 {
     assert(c.empty() == false);
@@ -42,8 +55,11 @@ channel calculate(const channel& c, double g)
 
     for (int32_t i = 0; i < image_size; i++)
     {
-        double c = static_cast<double>(_c[i]) / channel::max_value;
-        _d[i] = pow(c, g) * channel::max_value;
+        int32_t v = _c[i];
+        
+        assert(v >= 0 && v <= channel::max_value);
+        
+        _d[i] = calculate(v, g);
     }
 
     return d;
