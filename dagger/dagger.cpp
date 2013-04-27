@@ -41,6 +41,7 @@
 #include <dagger/algorithm/levels/grayscale.h>
 #include <dagger/algorithm/auto_levels/rgb.h>
 #include <dagger/algorithm/auto_levels/grayscale.h>
+#include <dagger/algorithm/threshold/grayscale.h>
 
 
 using namespace dagger;
