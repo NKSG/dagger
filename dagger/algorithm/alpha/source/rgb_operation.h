@@ -21,26 +21,44 @@
 #pragma once
 
 
-#include <dagger/operation.h>
 #include <dagger/data/rgb.h>
-#include <dagger/algorithm/invert.h>
 
 
 namespace dagger {
 namespace algorithm {
-namespace invert {
+namespace alpha {
+namespace source {
 
 
-struct grayscale : public unary<data::grayscale>::function
+struct rgb_operation
 {
-    data::grayscale operator()(const data::grayscale& s)
+    dagger::operation<data::rgb>* op;
+    data::rgb image_alpha;
+
+    rgb_operation(dagger::operation<data::rgb>* _op)
+      : op(_op)
     {
-        data::grayscale d;
+    }
 
-        d.g = calculate(s.g);
+    void prepare()
+    {
+        op->render(&image_alpha);
+    }
 
-        return d;
+    const dagger::channel& r() const
+    {
+        return image_alpha.r;
+    }
+
+    const dagger::channel& g() const
+    {
+        return image_alpha.g;
+    }
+
+    const dagger::channel& b() const
+    {
+        return image_alpha.b;
     }
 };
 
-}}}
+}}}}

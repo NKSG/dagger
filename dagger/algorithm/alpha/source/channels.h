@@ -26,20 +26,41 @@
 
 namespace dagger {
 namespace algorithm {
-namespace value {
+namespace alpha {
+namespace source {
 
-int32_t calculate_source_value(int32_t source_value, int32_t source_scale)
+
+struct channels
 {
-    assert(source_value >= 0 && source_value <= source_scale);
-    
-    return (static_cast<int64_t>(source_value) * channel::max_value) / source_scale;
-}
+    dagger::channel r_alpha;
+    dagger::channel g_alpha;
+    dagger::channel b_alpha;
 
-int32_t calculate_destination_value(int32_t value, int32_t destination_scale)
-{
-    assert(value >= 0 && value <= channel::max_value);
-    
-    return (static_cast<int64_t>(value) * destination_scale) / channel::max_value;
-}
+    channels(const dagger::channel& _r_alpha, const dagger::channel& _g_alpha, const dagger::channel& _b_alpha)
+      : r_alpha(_r_alpha)
+      , g_alpha(_g_alpha)
+      , b_alpha(_b_alpha)
+    {
+    }
 
-}}}
+    void prepare()
+    {
+    }
+
+    const dagger::channel& r() const
+    {
+        return r_alpha;
+    }
+
+    const dagger::channel& g() const
+    {
+        return g_alpha;
+    }
+
+    const dagger::channel& b() const
+    {
+        return b_alpha;
+    }
+};
+
+}}}}

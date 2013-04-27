@@ -21,34 +21,19 @@
 #pragma once
 
 
-#include <dagger/operation.h>
-#include <dagger/data/rgb.h>
-#include <dagger/data/grayscale.h>
-#include <dagger/algorithm/channel_mixer.h>
+#include <dagger/channel.h>
 
 
 namespace dagger {
 namespace algorithm {
-namespace channel_mixer {
+namespace value {
 
 
-struct grayscale : public transform<data::rgb, data::grayscale>::function
+int32_t source(int32_t source_value, int32_t source_scale)
 {
-    double r_into_g, g_into_g, b_into_g;
+    assert(source_value >= 0 && source_value <= source_scale);
 
-    grayscale(double _r_into_g, double _g_into_g, double _b_into_g)
-      : r_into_g(_r_into_g), g_into_g(_g_into_g), b_into_g(_b_into_g)
-    {
-    }
-
-    data::grayscale operator()(const data::rgb& s)
-    {
-        data::grayscale d;
-    
-        d.g = calculate(s.r, r_into_g, s.g, g_into_g, s.b, b_into_g);
-
-        return d;
-    }
-};
+    return (static_cast<int64_t>(source_value) * channel::max_value) / source_scale;
+}
 
 }}}

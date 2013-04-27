@@ -33,12 +33,12 @@ class matrix
 {
 public:
     typedef std::vector<double> values_t;
-    
+
 public:
     matrix(int16_t width, int16_t height)
     {
         create_matrix(width, height);
-        
+
         m_values.resize(width * height);
         std::fill(m_values.begin(), m_values.end(), 0);
     }
@@ -46,9 +46,9 @@ public:
     matrix(int16_t width, int16_t height, const values_t& values)
     {
         assert(values.size() == static_cast<uint32_t>(width) * height);
-        
+
         create_matrix(width, height);
-        
+
         m_values.resize(width * height);
         std::copy(values.begin(), values.end(), m_values.begin());
     }
@@ -73,7 +73,7 @@ public:
     {
         std::vector<int64_t> int_values;
         int_values.resize(m_values.size());
-        
+
         std::transform(m_values.begin(), m_values.end(), int_values.begin(),
                        [](const double& v) {return static_cast<int64_t>(v * 1000);});
 
@@ -111,7 +111,7 @@ public:
     {
         m_width = other.m_width;
         m_height = other.m_height;
-        
+
         m_values = std::move(other.m_values);
 
         return *this;
@@ -122,7 +122,7 @@ private:
     {
         assert(width % 2 != 0);
         assert(height % 2 != 0);
-        
+
         assert(width > 0 && width <= 8192);
         assert(height > 0 && height <= 8192);
 
@@ -141,14 +141,14 @@ private:
 int32_t calculate(const int32_t* data, int32_t size, const std::vector<int64_t>& kernel, bool normalize)
 {
     int64_t v = 0;
-    
+
     v = std::inner_product(data, data+size, kernel.begin(), static_cast<int64_t>(0));
-            
+
     v /= 1000;
-            
+
     if (normalize == true)
         v /= size;
-            
+
     v = std::min(v, static_cast<int64_t>(channel::max_value));
     v = std::max(v, static_cast<int64_t>(0));
 
@@ -161,15 +161,15 @@ int32_t calculate(const int32_t* data, int32_t size, const std::vector<int64_t>&
 channel calculate(const channel& c, const matrix& k, bool normalize)
 {
     assert(c.empty() == false);
-    
+
     assert(k.width() <= 8192);
     assert(k.height() <= 8129);
-    
+
     channel d(c.width(), c.height());
     channel v(k.width(), k.height());
 
     std::vector<int64_t> kernel = k.values();
-    
+
     int16_t width = c.width();
     int16_t height = c.height();
 
@@ -187,7 +187,7 @@ channel calculate(const channel& c, const matrix& k, bool normalize)
         for (int16_t x = 0; x < width; x++)
         {
             v.view(c, x-x_offset, y-y_offset);
-            
+
             _d[offset++] = calculate(data, size, kernel, normalize);
         }
     }

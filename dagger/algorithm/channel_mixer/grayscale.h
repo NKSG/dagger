@@ -23,7 +23,9 @@
 
 #include <dagger/operation.h>
 #include <dagger/data/rgb.h>
-#include <dagger/algorithm/channel_mixer.h>
+#include <dagger/data/grayscale.h>
+
+#include <dagger/algorithm/channel_mixer/base.h>
 
 
 namespace dagger {
@@ -31,28 +33,20 @@ namespace algorithm {
 namespace channel_mixer {
 
 
-struct rgb : public unary<data::rgb>::function
+struct grayscale : public transform<data::rgb, data::grayscale>::function
 {
-    double r_into_r, g_into_r, b_into_r;
     double r_into_g, g_into_g, b_into_g;
-    double r_into_b, g_into_b, b_into_b;
 
-    rgb(double _r_into_r, double _g_into_r, double _b_into_r,
-        double _r_into_g, double _g_into_g, double _b_into_g,
-        double _r_into_b, double _g_into_b, double _b_into_b)
-      : r_into_r(_r_into_r), g_into_r(_g_into_r), b_into_r(_b_into_r)
-      , r_into_g(_r_into_g), g_into_g(_g_into_g), b_into_g(_b_into_g)
-      , r_into_b(_r_into_b), g_into_b(_g_into_b), b_into_b(_b_into_b)
+    grayscale(double _r_into_g, double _g_into_g, double _b_into_g)
+      : r_into_g(_r_into_g), g_into_g(_g_into_g), b_into_g(_b_into_g)
     {
     }
 
-    data::rgb operator()(const data::rgb& s)
+    data::grayscale operator()(const data::rgb& s)
     {
-        data::rgb d;
-    
-        d.r = calculate(s.r, r_into_r, s.g, g_into_r, s.b, b_into_r);
+        data::grayscale d;
+
         d.g = calculate(s.r, r_into_g, s.g, g_into_g, s.b, b_into_g);
-        d.b = calculate(s.r, r_into_b, s.g, g_into_b, s.b, b_into_b);
 
         return d;
     }

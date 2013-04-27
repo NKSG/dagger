@@ -20,31 +20,31 @@
 
 #pragma once
 
-
 #include <dagger/operation.h>
 #include <dagger/data/grayscale.h>
-#include <dagger/algorithm/alpha.h>
+
+#include <dagger/algorithm/gamma/grayscale.h>
 
 
 namespace dagger {
 namespace algorithm {
-namespace alpha {
+namespace gamma {
 
 
-struct grayscale : public binary<data::grayscale>::function
+struct grayscale : public unary<data::grayscale>::function
 {
-    channel g_alpha;
+    double g_gamma;
 
-    grayscale(const channel& _g_alpha)
-      : g_alpha(_g_alpha)
+    grayscale(double _g_gamma)
+      : g_gamma(_g_gamma)
     {
     }
-    
-    data::grayscale operator()(const data::grayscale& s1, const data::grayscale& s2)
+
+    data::grayscale operator()(const data::grayscale& s)
     {
         data::grayscale d;
-    
-        d.g = calculate(s1.g, s2.g, g_alpha);
+
+        d.g = calculate(s.g, g_gamma);
 
         return d;
     }

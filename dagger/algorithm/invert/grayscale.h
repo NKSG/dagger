@@ -22,31 +22,23 @@
 
 
 #include <dagger/operation.h>
-#include <dagger/data/grayscale.h>
-#include <dagger/algorithm/kernel.h>
+#include <dagger/data/rgb.h>
+
+#include <dagger/algorithm/invert/base.h>
 
 
 namespace dagger {
 namespace algorithm {
-namespace kernel {
+namespace invert {
+
 
 struct grayscale : public unary<data::grayscale>::function
 {
-    matrix g_kernel;
-
-    bool normalize;
-
-    grayscale(const matrix& _g_kernel, bool _normalize)
-      : g_kernel(_g_kernel)
-      , normalize(_normalize)
-    {
-    }
-    
     data::grayscale operator()(const data::grayscale& s)
     {
         data::grayscale d;
-    
-        d.g = calculate(s.g, g_kernel, normalize);
+
+        d.g = calculate(s.g);
 
         return d;
     }

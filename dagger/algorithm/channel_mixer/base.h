@@ -54,7 +54,7 @@ channel calculate(const channel& c1, double c1_into_d,
     assert(c1.empty() == false);
     assert(c2.empty() == false);
     assert(c3.empty() == false);
-    
+
     if (channel::equal_dimensions(c1, c2) == false)
         throw channel::different_channels_error();
 
@@ -66,7 +66,7 @@ channel calculate(const channel& c1, double c1_into_d,
     const int32_t* _c1 = c1.data().get();
     const int32_t* _c2 = c2.data().get();
     const int32_t* _c3 = c3.data().get();
-    
+
     int32_t* _d = d.data().get();
 
     int32_t image_size = c1.image_size();

@@ -26,49 +26,40 @@
 
 namespace dagger {
 namespace algorithm {
-namespace scale {
+namespace gamma {
 
 
-int32_t calculate(const int32_t* data, int32_t size)
+int32_t calculate(int32_t v, double g)
 {
-    int64_t v = 0;
+    double _v = static_cast<double>(v) / channel::max_value;
+    _v = pow(_v, g) * channel::max_value;
 
-    v += std::accumulate(data, data + size, static_cast<int64_t>(0));
-    v /= size;
+    v = static_cast<int32_t>(_v);
 
     assert(v >= 0 && v <= channel::max_value);
 
     return v;
 }
 
-channel calculate(const channel& c, int16_t new_width, int16_t new_height)
+
+channel calculate(const channel& c, double g)
 {
     assert(c.empty() == false);
-    
-    channel d(new_width, new_height);
-    
-    channel v(3, 3);
-    
-    int32_t* data = v.data().get();
-    
-    int16_t old_width = c.width();
-    int16_t old_height = c.height();
 
+    channel d(c.width(), c.height());
+
+    const int32_t* _c = c.data().get();
     int32_t* _d = d.data().get();
-    int32_t offset = 0;
-    
-    for (int16_t y = 0; y < new_height; y++)
+
+    int32_t image_size = c.image_size();
+
+    for (int32_t i = 0; i < image_size; i++)
     {
-        int16_t source_y = static_cast<int64_t>(y) * old_height / new_height;
-        
-        for (int16_t x = 0; x < new_width; x++)
-        {
-            int16_t source_x = static_cast<int64_t>(x) * old_width / new_width;
+        int32_t v = _c[i];
 
-            v.view(c, source_x-1, source_y-1);
+        assert(v >= 0 && v <= channel::max_value);
 
-            _d[offset++] = calculate(data, 9);
-        }
+        _d[i] = calculate(v, g);
     }
 
     return d;

@@ -31,13 +31,13 @@ template<typename data>
 class operation
 {
 public:
-    virtual uint32_t render(bool single_pass, data* d) = 0;
+    virtual uint32_t render(data* d) = 0;
 
 public:
     operation()
     {
     }
-    
+
     virtual ~operation()
     {
     }
@@ -63,7 +63,7 @@ public:
     }
 
 public:
-    uint32_t render(bool single_pass, data* d)
+    uint32_t render(data* d)
     {
         *d = m_data;
         return 1;
@@ -98,22 +98,14 @@ public:
     void update()
     {
         m_data_diff = data_diff();
-        
+
         m_last_parent_change = 0;
     }
 
-    uint32_t render(bool single_pass, data* d)
+    uint32_t render(data* d)
     {
-        uint32_t last_parent_change = m_parent->render(single_pass, d);
+        uint32_t last_parent_change = m_parent->render(d);
 
-        if (single_pass == true)
-        {
-            update();
-            
-            *d = m_function->operator()(*d);
-            return ++m_last_change;
-        }
-        
         if (last_parent_change == m_last_parent_change)
         {
             m_data_diff.apply(d);
@@ -124,12 +116,16 @@ public:
 
         m_last_parent_change = last_parent_change;
         m_data_diff = data_diff(*d, r);
-        
+
         *d = r;
-        
+
         return ++m_last_change;
     }
 
+private:
+    typedef typename data::diff data_diff;
+
+private:
     void connect(operation<data>* parent)
     {
         assert(parent != nullptr);
@@ -140,13 +136,10 @@ public:
     }
 
 private:
-    typedef typename data::diff data_diff;
-    
-private:
     operation<data>* m_parent;
-    
+
     function* m_function;
-    
+
     data_diff m_data_diff;
 
     uint32_t m_last_change;
@@ -178,26 +171,18 @@ public:
     void update()
     {
         m_data = data();
-        
+
         m_last_parent1_change = 0;
         m_last_parent1_change = 0;
     }
 
-    uint32_t render(bool single_pass, data* d)
+    uint32_t render(data* d)
     {
         data d1, d2;
-        
-        uint32_t last_parent1_change = m_parent1->render(single_pass, &d1);
-        uint32_t last_parent2_change = m_parent2->render(single_pass, &d2);
 
-        if (single_pass == true)
-        {
-            update();
+        uint32_t last_parent1_change = m_parent1->render(&d1);
+        uint32_t last_parent2_change = m_parent2->render(&d2);
 
-            *d = m_function->operator()(d1, d2);
-            return ++m_last_change;
-        }
-        
         bool needs_update = false;
 
         needs_update |= last_parent1_change != m_last_parent1_change;
@@ -211,10 +196,11 @@ public:
 
         m_data = m_function->operator()(d1, d2);
         *d = m_data;
-            
+
         return ++m_last_change;
     }
 
+private:
     void connect(operation<data>* parent1, operation<data>* parent2)
     {
         assert(parent1 != nullptr);
@@ -230,9 +216,9 @@ public:
 private:
     operation<data>* m_parent1;
     operation<data>* m_parent2;
-    
+
     function* m_function;
-    
+
     data      m_data;
 
     uint32_t m_last_change;
@@ -266,19 +252,11 @@ public:
         m_last_parent_change = 0;
     }
 
-    uint32_t render(bool single_pass, data_destination* d)
+    uint32_t render(data_destination* d)
     {
         data_source tmp;
-        
-        uint32_t last_parent_change = m_parent->render(single_pass, &tmp);
 
-        if (single_pass == true)
-        {
-            update();
-
-            *d = m_function->operator()(tmp);
-            return ++m_last_change;
-        }
+        uint32_t last_parent_change = m_parent->render(&tmp);
 
         if (last_parent_change == m_last_parent_change)
         {
@@ -287,14 +265,15 @@ public:
         }
 
         m_last_parent_change = last_parent_change;
-            
+
         m_data = m_function->operator()(tmp);
-        
+
         *d = m_data;
-        
+
         return ++m_last_change;
     }
 
+private:
     void connect(operation<data_source>* parent)
     {
         assert(parent != nullptr);
@@ -306,9 +285,9 @@ public:
 
 private:
     operation<data_source>* m_parent;
-    
+
     function* m_function;
-    
+
     data_destination m_data;
 
     uint32_t m_last_change;

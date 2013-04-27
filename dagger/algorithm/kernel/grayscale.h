@@ -23,54 +23,31 @@
 
 #include <dagger/operation.h>
 #include <dagger/data/grayscale.h>
-#include <dagger/algorithm/scale.h>
+
+#include <dagger/algorithm/kernel/base.h>
 
 
 namespace dagger {
 namespace algorithm {
-namespace scale {
+namespace kernel {
 
-
-struct grayscale : public transform<data::grayscale, data::grayscale>::function
+struct grayscale : public unary<data::grayscale>::function
 {
-    int16_t new_width;
-    int16_t new_height;
-    
-    double width_scale;
-    double height_scale;
-    
-    grayscale(int16_t _new_width, int16_t _new_height)
-      : new_width(_new_width)
-      , new_height(_new_height)
-      , width_scale(0)
-      , height_scale(0)
+    matrix g_kernel;
+
+    bool normalize;
+
+    grayscale(const matrix& _g_kernel, bool _normalize)
+      : g_kernel(_g_kernel)
+      , normalize(_normalize)
     {
     }
 
-    grayscale(double _width_scale, double _height_scale)
-      : new_width(0)
-      , new_height(0)
-      , width_scale(_width_scale)
-      , height_scale(_height_scale)
-    {
-    }
-
-    grayscale(double scale)
-      : grayscale(scale, scale)
-    {
-    }
-    
     data::grayscale operator()(const data::grayscale& s)
     {
         data::grayscale d;
 
-        if (width_scale != 0)
-            new_width = s.width() * width_scale;
-
-        if (height_scale != 0)
-            new_height = s.height() * height_scale;
-    
-        d.g = scale::calculate(s.g, new_width, new_height);
+        d.g = calculate(s.g, g_kernel, normalize);
 
         return d;
     }

@@ -36,9 +36,9 @@ int32_t calculate(int32_t v1, int32_t v2, int32_t va)
     v += static_cast<int64_t>(v1) * va;
     v += static_cast<int64_t>(v2) * (channel::max_value - va);
     v /= channel::max_value;
-    
+
     assert(v >= 0 && v <= channel::max_value);
-        
+
     return v;
 }
 
@@ -59,7 +59,7 @@ channel calculate(const channel& c1, const channel& c2, int32_t a)
     const int32_t* _c2 = c2.data().get();
 
     int32_t* _d = d.data().get();
-    
+
     int32_t image_size = c1.image_size();
 
     for (int32_t i = 0; i < image_size; i++)
@@ -82,7 +82,7 @@ channel calculate(const channel& c1, const channel& c2, const channel& a)
     assert(c1.empty() == false);
     assert(c2.empty() == false);
     assert(a.empty() == false);
-    
+
     if (channel::equal_dimensions(c1, c2) == false)
         throw channel::different_channels_error();
 
@@ -96,7 +96,7 @@ channel calculate(const channel& c1, const channel& c2, const channel& a)
     const int32_t* _a = a.data().get();
 
     int32_t* _d = d.data().get();
-    
+
     int32_t image_size = c1.image_size();
 
     for (int32_t i = 0; i < image_size; i++)

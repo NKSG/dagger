@@ -23,23 +23,34 @@
 
 #include <dagger/operation.h>
 #include <dagger/data/rgb.h>
-#include <dagger/algorithm/invert.h>
+
+#include <dagger/algorithm/alpha/base.h>
 
 
 namespace dagger {
 namespace algorithm {
-namespace invert {
+namespace alpha {
 
 
-struct rgb : public unary<data::rgb>::function
+template<typename source>
+struct rgb : public binary<data::rgb>::function
 {
-    data::rgb operator()(const data::rgb& s)
+    source* s;
+
+    rgb(source* _s)
+      : s(_s)
+    {
+    }
+
+    data::rgb operator()(const data::rgb& s1, const data::rgb& s2)
     {
         data::rgb d;
 
-        d.r = calculate(s.r);
-        d.g = calculate(s.g);
-        d.b = calculate(s.b);
+        s->prepare();
+
+        d.r = calculate(s1.r, s2.r, s->r());
+        d.g = calculate(s1.g, s2.g, s->g());
+        d.b = calculate(s1.b, s2.b, s->b());
 
         return d;
     }

@@ -21,47 +21,42 @@
 #pragma once
 
 
-#include <dagger/operation.h>
-#include <dagger/data/rgb.h>
-#include <dagger/algorithm/kernel.h>
+#include <dagger/channel.h>
 
 
 namespace dagger {
 namespace algorithm {
-namespace kernel {
+namespace alpha {
+namespace source {
 
 
-struct rgb : public unary<data::rgb>::function
+struct channel
 {
-    matrix r_kernel;
-    matrix g_kernel;
-    matrix b_kernel;
+    dagger::channel alpha;
 
-    bool normalize;
-
-    rgb(const matrix& _r_kernel, const matrix& _g_kernel, const matrix& _b_kernel, bool _normalize)
-      : r_kernel(_r_kernel)
-      , g_kernel(_g_kernel)
-      , b_kernel(_b_kernel)
-      , normalize(_normalize)
-    {
-    }
-    
-    rgb(const matrix& _kernel, bool _normalize)
-      : rgb(_kernel, _kernel, _kernel, _normalize)
+    channel(const dagger::channel& _alpha)
+      : alpha(_alpha)
     {
     }
 
-    data::rgb operator()(const data::rgb& s)
+    void prepare()
     {
-        data::rgb d;
-    
-        d.r = calculate(s.r, r_kernel, normalize);
-        d.g = calculate(s.g, g_kernel, normalize);
-        d.b = calculate(s.b, b_kernel, normalize);
+    }
 
-        return d;
+    const dagger::channel& r() const
+    {
+        return alpha;
+    }
+
+    const dagger::channel& g() const
+    {
+        return alpha;
+    }
+
+    const dagger::channel& b() const
+    {
+        return alpha;
     }
 };
 
-}}}
+}}}}

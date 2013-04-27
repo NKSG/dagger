@@ -20,18 +20,23 @@
 
 #include <dagger/image/png.h>
 
-#include <dagger/algorithm/gamma_rgb.h>
-#include <dagger/algorithm/gamma_grayscale.h>
-#include <dagger/algorithm/alpha_rgb.h>
-#include <dagger/algorithm/alpha_grayscale.h>
-#include <dagger/algorithm/scale_rgb.h>
-#include <dagger/algorithm/scale_grayscale.h>
-#include <dagger/algorithm/kernel_rgb.h>
-#include <dagger/algorithm/kernel_grayscale.h>
-#include <dagger/algorithm/invert_rgb.h>
-#include <dagger/algorithm/invert_grayscale.h>
-#include <dagger/algorithm/channel_mixer_rgb.h>
-#include <dagger/algorithm/channel_mixer_grayscale.h>
+#include <dagger/algorithm/gamma/rgb.h>
+#include <dagger/algorithm/gamma/grayscale.h>
+#include <dagger/algorithm/alpha/rgb.h>
+#include <dagger/algorithm/alpha/source/channel.h>
+#include <dagger/algorithm/alpha/source/channels.h>
+#include <dagger/algorithm/alpha/source/values.h>
+#include <dagger/algorithm/alpha/source/rgb_operation.h>
+#include <dagger/algorithm/alpha/source/grayscale_operation.h>
+#include <dagger/algorithm/alpha/grayscale.h>
+#include <dagger/algorithm/scale/rgb.h>
+#include <dagger/algorithm/scale/grayscale.h>
+#include <dagger/algorithm/kernel/rgb.h>
+#include <dagger/algorithm/kernel/grayscale.h>
+#include <dagger/algorithm/invert/rgb.h>
+#include <dagger/algorithm/invert/grayscale.h>
+#include <dagger/algorithm/channel_mixer/rgb.h>
+#include <dagger/algorithm/channel_mixer/grayscale.h>
 
 
 using namespace dagger;
@@ -40,17 +45,17 @@ using namespace dagger;
 int main()
 {
     auto input = image::load_png("test.png");
-    
+
     data::rgb& i = std::get<0>(input);
     channel& alpha = std::get<1>(input);
 
     ////////////////////////////////////////
     root<data::rgb> o1_image(i);
     root<data::rgb> o1_background(data::rgb(i.width(), i.height()));
-    
+
     ////////////////////////////////////////
-    algorithm::alpha::from_channel bla(alpha);
-    algorithm::alpha::rgb<algorithm::alpha::from_values> o2_alpha(0);
+    algorithm::alpha::source::values bla(1, 1, 1);
+    algorithm::alpha::rgb<algorithm::alpha::source::values> o2_alpha(&bla);
     binary<data::rgb> o2(&o1_image, &o1_background, &o2_alpha);
 
     ////////////////////////////////////////
@@ -63,7 +68,7 @@ int main()
 
     ////////////////////////////////////////
     algorithm::kernel::matrix test_kernel(3, 3);
-    
+
     test_kernel.set_value(0, 0, 1);
     test_kernel.set_value(1, 0, 1);
     test_kernel.set_value(2, 0, 1);
@@ -73,7 +78,7 @@ int main()
     test_kernel.set_value(0, 2, 1);
     test_kernel.set_value(1, 2, 1);
     test_kernel.set_value(2, 2, 1);
-    
+
     algorithm::kernel::rgb o5_kernel(test_kernel, true);
     unary<data::rgb> o5(&o4, &o5_kernel);
 
@@ -91,8 +96,8 @@ int main()
 
     ////////////////////////////////////////
     data::rgb result;
-    o8.render(false, &result);
-    
+    o8.render(&result);
+
     image::save_png("test1.png", result);
 
     return 0;

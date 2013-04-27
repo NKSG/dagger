@@ -20,33 +20,45 @@
 
 #pragma once
 
-#include <dagger/operation.h>
+
 #include <dagger/data/grayscale.h>
-#include <dagger/algorithm/gamma.h>
 
 
 namespace dagger {
 namespace algorithm {
-namespace gamma {
+namespace alpha {
+namespace source {
 
 
-struct grayscale : public unary<data::grayscale>::function
+struct grayscale_operation
 {
-    double g_gamma;
-    
-    grayscale(double _g_gamma)
-      : g_gamma(_g_gamma)
+    dagger::operation<data::grayscale>* op;
+    data::grayscale image_alpha;
+
+    grayscale_operation(dagger::operation<data::grayscale>* _op)
+      : op(_op)
     {
     }
 
-    data::grayscale operator()(const data::grayscale& s)
+    void prepare()
     {
-        data::grayscale d;
-        
-        d.g = calculate(s.g, g_gamma);
+        op->render(&image_alpha);
+    }
 
-        return d;
+    const dagger::channel& r() const
+    {
+        return image_alpha.g;
+    }
+
+    const dagger::channel& g() const
+    {
+        return image_alpha.g;
+    }
+
+    const dagger::channel& b() const
+    {
+        return image_alpha.g;
     }
 };
 
-}}}
+}}}}

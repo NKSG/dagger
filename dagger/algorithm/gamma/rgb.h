@@ -20,46 +20,45 @@
 
 #pragma once
 
+#include <dagger/operation.h>
+#include <dagger/data/rgb.h>
 
-#include <dagger/channel.h>
+#include <dagger/algorithm/gamma/base.h>
 
 
 namespace dagger {
 namespace algorithm {
-namespace invert {
+namespace gamma {
 
 
-int32_t calculate(int32_t v)
+struct rgb : public unary<data::rgb>::function
 {
-    v = channel::max_value - v;
+    double r_gamma;
+    double g_gamma;
+    double b_gamma;
 
-    assert(v >= 0 && v <= channel::max_value);
-
-    return v;
-}
-
-
-channel calculate(const channel& c)
-{
-    assert(c.empty() == false);
-    
-    channel d(c.width(), c.height());
-
-    const int32_t* _c = c.data().get();
-    int32_t* _d = d.data().get();
-    
-    int32_t image_size = c.image_size();
-
-    for (int32_t i = 0; i < image_size; i++)
+    rgb(double _r_gamma, double _g_gamma, double _b_gamma)
+      : r_gamma(_r_gamma)
+      , g_gamma(_g_gamma)
+      , b_gamma(_b_gamma)
     {
-        int32_t v = _c[i];
-        
-        assert(v >= 0 && v <= channel::max_value);
-        
-        _d[i] = calculate(v);
     }
 
-    return d;
-}
+    rgb(double g)
+      : rgb(g, g, g)
+    {
+    }
+
+    data::rgb operator()(const data::rgb& s)
+    {
+        data::rgb d;
+
+        d.r = calculate(s.r, r_gamma);
+        d.g = calculate(s.g, g_gamma);
+        d.b = calculate(s.b, b_gamma);
+
+        return d;
+    }
+};
 
 }}}

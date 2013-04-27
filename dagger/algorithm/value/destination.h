@@ -26,43 +26,14 @@
 
 namespace dagger {
 namespace algorithm {
-namespace gamma {
+namespace value {
 
 
-int32_t calculate(int32_t v, double g)
+int32_t destination(int32_t value, int32_t destination_scale)
 {
-    double _v = static_cast<double>(v) / channel::max_value;
-    _v = pow(_v, g) * channel::max_value;
+    assert(value >= 0 && value <= channel::max_value);
 
-    v = static_cast<int32_t>(_v);
-
-    assert(v >= 0 && v <= channel::max_value);
-    
-    return v;
-}
-
-
-channel calculate(const channel& c, double g)
-{
-    assert(c.empty() == false);
-    
-    channel d(c.width(), c.height());
-
-    const int32_t* _c = c.data().get();
-    int32_t* _d = d.data().get();
-
-    int32_t image_size = c.image_size();
-
-    for (int32_t i = 0; i < image_size; i++)
-    {
-        int32_t v = _c[i];
-        
-        assert(v >= 0 && v <= channel::max_value);
-        
-        _d[i] = calculate(v, g);
-    }
-
-    return d;
+    return (static_cast<int64_t>(value) * destination_scale) / channel::max_value;
 }
 
 }}}

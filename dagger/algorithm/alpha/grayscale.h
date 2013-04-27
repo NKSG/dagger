@@ -20,41 +20,35 @@
 
 #pragma once
 
+
 #include <dagger/operation.h>
-#include <dagger/data/rgb.h>
-#include <dagger/algorithm/gamma.h>
+#include <dagger/data/grayscale.h>
+
+#include <dagger/algorithm/alpha/base.h>
 
 
 namespace dagger {
 namespace algorithm {
-namespace gamma {
+namespace alpha {
 
 
-struct rgb : public unary<data::rgb>::function
+template<typename source>
+struct grayscale : public binary<data::grayscale>::function
 {
-    double r_gamma;
-    double g_gamma;
-    double b_gamma;
-    
-    rgb(double _r_gamma, double _g_gamma, double _b_gamma)
-      : r_gamma(_r_gamma)
-      , g_gamma(_g_gamma)
-      , b_gamma(_b_gamma)
+    source* s;
+
+    grayscale(source* _s)
+      : s(_s)
     {
     }
 
-    rgb(double g)
-      : rgb(g, g, g)
+    data::grayscale operator()(const data::grayscale& s1, const data::grayscale& s2)
     {
-    }
-    
-    data::rgb operator()(const data::rgb& s)
-    {
-        data::rgb d;
-        
-        d.r = calculate(s.r, r_gamma);
-        d.g = calculate(s.g, g_gamma);
-        d.b = calculate(s.b, b_gamma);
+        data::grayscale d;
+
+        s->prepare();
+
+        d.g = calculate(s1.g, s2.g, s->g());
 
         return d;
     }

@@ -23,7 +23,8 @@
 
 #include <dagger/operation.h>
 #include <dagger/data/rgb.h>
-#include <dagger/algorithm/scale.h>
+
+#include <dagger/algorithm/scale/base.h>
 
 
 namespace dagger {
@@ -35,10 +36,10 @@ struct rgb : public transform<data::rgb, data::rgb>::function
 {
     int16_t new_width;
     int16_t new_height;
-    
+
     double width_scale;
     double height_scale;
-    
+
     rgb(int16_t _new_width, int16_t _new_height)
       : new_width(_new_width)
       , new_height(_new_height)
@@ -59,7 +60,7 @@ struct rgb : public transform<data::rgb, data::rgb>::function
       : rgb(scale, scale)
     {
     }
-    
+
     data::rgb operator()(const data::rgb& s)
     {
         data::rgb d;
@@ -69,7 +70,7 @@ struct rgb : public transform<data::rgb, data::rgb>::function
 
         if (height_scale != 0)
             new_height = s.height() * height_scale;
-    
+
         d.r = calculate(s.r, new_width, new_height);
         d.g = calculate(s.g, new_width, new_height);
         d.b = calculate(s.b, new_width, new_height);
