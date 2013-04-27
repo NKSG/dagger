@@ -31,7 +31,7 @@ namespace dagger {
 namespace image {
 
 
-std::tuple<data::rgb, channel> load_png(const std::string& file_name)
+std::pair<data::rgb, channel> load_png(const std::string& file_name)
 {
     uint32_t width = 0;
     uint32_t height = 0;
@@ -66,7 +66,7 @@ std::tuple<data::rgb, channel> load_png(const std::string& file_name)
         _a[i] = algorithm::value::source(a, 255);
     }
 
-    return std::make_tuple(image, alpha);
+    return std::make_pair(image, alpha);
 }
 
 void save_png(const std::string& file_name, const data::rgb& image, const channel& alpha)

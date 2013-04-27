@@ -33,17 +33,17 @@ int32_t calculate(int32_t v1, int32_t v1_into,
                   int32_t v2, int32_t v2_into,
                   int32_t v3, int32_t v3_into)
 {
-        int64_t v = 0;
+    int64_t v = 0;
 
-        v += std::max(static_cast<int64_t>(v1) * v1_into, static_cast<int64_t>(0));
-        v += std::max(static_cast<int64_t>(v2) * v2_into, static_cast<int64_t>(0));
-        v += std::max(static_cast<int64_t>(v3) * v3_into, static_cast<int64_t>(0));
+    v += std::max(static_cast<int64_t>(v1) * v1_into, static_cast<int64_t>(0));
+    v += std::max(static_cast<int64_t>(v2) * v2_into, static_cast<int64_t>(0));
+    v += std::max(static_cast<int64_t>(v3) * v3_into, static_cast<int64_t>(0));
 
-        v /= 1000;
+    v /= 1000;
 
-        assert(v >= 0 && v <= channel::max_value);
+    assert(v >= 0 && v <= channel::max_value);
 
-        return v;
+    return v;
 }
 
 

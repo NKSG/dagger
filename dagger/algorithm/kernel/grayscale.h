@@ -37,10 +37,11 @@ struct grayscale : public unary<data::grayscale>::function
 
     bool normalize;
 
-    grayscale(const matrix& _g_kernel, bool _normalize)
-      : g_kernel(_g_kernel)
-      , normalize(_normalize)
+    grayscale()
+      : g_kernel(1, 1)
+      , normalize(false)
     {
+        g_kernel.set_value(0, 0, 1);
     }
 
     data::grayscale operator()(const data::grayscale& s)

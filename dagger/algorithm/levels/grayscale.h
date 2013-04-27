@@ -24,34 +24,32 @@
 #include <dagger/operation.h>
 #include <dagger/data/rgb.h>
 
-#include <dagger/algorithm/channel_mixer/base.h>
+#include <dagger/algorithm/levels/base.h>
 
 
 namespace dagger {
 namespace algorithm {
-namespace channel_mixer {
+namespace levels {
 
 
-struct rgb : public unary<data::rgb>::function
+struct grayscale : public unary<data::grayscale>::function
 {
-    double r_into_r, g_into_r, b_into_r;
-    double r_into_g, g_into_g, b_into_g;
-    double r_into_b, g_into_b, b_into_b;
+    int32_t g_input_low, g_input_high;
+    int32_t g_output_low, g_output_high;
 
-    rgb()
-      : r_into_r(1), g_into_r(0), b_into_r(0)
-      , r_into_g(0), g_into_g(1), b_into_g(0)
-      , r_into_b(0), g_into_b(0), b_into_b(1)
+    grayscale()
+      : g_input_low(0)
+      , g_input_high(channel::max_value)
+      , g_output_low(0)
+      , g_output_high(channel::max_value)
     {
     }
 
-    data::rgb operator()(const data::rgb& s)
+    data::grayscale operator()(const data::grayscale& s)
     {
-        data::rgb d;
+        data::grayscale d;
 
-        d.r = calculate(s.r, r_into_r, s.g, g_into_r, s.b, b_into_r);
-        d.g = calculate(s.r, r_into_g, s.g, g_into_g, s.b, b_into_g);
-        d.b = calculate(s.r, r_into_b, s.g, g_into_b, s.b, b_into_b);
+        d.g = levels::calculate(s.g, g_input_low, g_input_high, g_output_low, g_output_high);
 
         return d;
     }

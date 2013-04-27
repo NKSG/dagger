@@ -35,8 +35,8 @@ struct grayscale : public unary<data::grayscale>::function
 {
     double g_gamma;
 
-    grayscale(double _g_gamma)
-      : g_gamma(_g_gamma)
+    grayscale()
+      : g_gamma(1)
     {
     }
 

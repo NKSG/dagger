@@ -40,17 +40,15 @@ struct rgb : public unary<data::rgb>::function
 
     bool normalize;
 
-    rgb(const matrix& _r_kernel, const matrix& _g_kernel, const matrix& _b_kernel, bool _normalize)
-      : r_kernel(_r_kernel)
-      , g_kernel(_g_kernel)
-      , b_kernel(_b_kernel)
-      , normalize(_normalize)
+    rgb()
+      : r_kernel(1, 1)
+      , g_kernel(1, 1)
+      , b_kernel(1, 1)
+      , normalize(false)
     {
-    }
-
-    rgb(const matrix& _kernel, bool _normalize)
-      : rgb(_kernel, _kernel, _kernel, _normalize)
-    {
+        r_kernel.set_value(0, 0, 1);
+        g_kernel.set_value(0, 0, 1);
+        b_kernel.set_value(0, 0, 1);
     }
 
     data::rgb operator()(const data::rgb& s)

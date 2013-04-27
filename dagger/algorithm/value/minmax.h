@@ -21,40 +21,24 @@
 #pragma once
 
 
-#include <dagger/operation.h>
-#include <dagger/data/rgb.h>
-
-#include <dagger/algorithm/channel_mixer/base.h>
+#include <dagger/channel.h>
 
 
 namespace dagger {
 namespace algorithm {
-namespace channel_mixer {
+namespace value {
 
 
-struct rgb : public unary<data::rgb>::function
+std::pair<int32_t, int32_t> minmax(const channel& c)
 {
-    double r_into_r, g_into_r, b_into_r;
-    double r_into_g, g_into_g, b_into_g;
-    double r_into_b, g_into_b, b_into_b;
+    assert (c.empty() == false);
 
-    rgb()
-      : r_into_r(1), g_into_r(0), b_into_r(0)
-      , r_into_g(0), g_into_g(1), b_into_g(0)
-      , r_into_b(0), g_into_b(0), b_into_b(1)
-    {
-    }
+    const int32_t* _c = c.data().get();
+    int32_t image_size = c.image_size();
 
-    data::rgb operator()(const data::rgb& s)
-    {
-        data::rgb d;
+    auto ret = std::minmax_element(_c, _c + image_size);
 
-        d.r = calculate(s.r, r_into_r, s.g, g_into_r, s.b, b_into_r);
-        d.g = calculate(s.r, r_into_g, s.g, g_into_g, s.b, b_into_g);
-        d.b = calculate(s.r, r_into_b, s.g, g_into_b, s.b, b_into_b);
-
-        return d;
-    }
-};
+    return std::make_pair(*ret.first, *ret.second);
+}
 
 }}}

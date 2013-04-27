@@ -37,6 +37,10 @@
 #include <dagger/algorithm/invert/grayscale.h>
 #include <dagger/algorithm/channel_mixer/rgb.h>
 #include <dagger/algorithm/channel_mixer/grayscale.h>
+#include <dagger/algorithm/levels/rgb.h>
+#include <dagger/algorithm/levels/grayscale.h>
+#include <dagger/algorithm/auto_levels/rgb.h>
+#include <dagger/algorithm/auto_levels/grayscale.h>
 
 
 using namespace dagger;
@@ -54,16 +58,25 @@ int main()
     root<data::rgb> o1_background(data::rgb(i.width(), i.height()));
 
     ////////////////////////////////////////
-    algorithm::alpha::source::values bla(1, 1, 1);
-    algorithm::alpha::rgb<algorithm::alpha::source::values> o2_alpha(&bla);
+    algorithm::alpha::source::channel bla(alpha);
+    algorithm::alpha::rgb<algorithm::alpha::source::channel> o2_alpha(&bla);
     binary<data::rgb> o2(&o1_image, &o1_background, &o2_alpha);
 
     ////////////////////////////////////////
-    algorithm::gamma::rgb o3_gamma(0.4545);
+    algorithm::gamma::rgb o3_gamma;
+
+    //o3_gamma.r_gamma = 0.4545;
+    //o3_gamma.g_gamma = 0.4545;
+    //o3_gamma.b_gamma = 0.4545;
+
     unary<data::rgb> o3(&o2, &o3_gamma);
 
     ////////////////////////////////////////
-    algorithm::scale::rgb o4_scale(0.5);
+    algorithm::scale::rgb o4_scale;
+
+    o4_scale.width_scale = 0.5;
+    o4_scale.height_scale = 0.5;
+
     transform<data::rgb, data::rgb> o4(&o3, &o4_scale);
 
     ////////////////////////////////////////
@@ -79,24 +92,45 @@ int main()
     test_kernel.set_value(1, 2, 1);
     test_kernel.set_value(2, 2, 1);
 
-    algorithm::kernel::rgb o5_kernel(test_kernel, true);
+    algorithm::kernel::rgb o5_kernel;
+
+    o5_kernel.normalize = true;
+    o5_kernel.r_kernel = test_kernel;
+    o5_kernel.g_kernel = test_kernel;
+    o5_kernel.b_kernel = test_kernel;
+
     unary<data::rgb> o5(&o4, &o5_kernel);
 
     ////////////////////////////////////////
-    algorithm::invert::rgb o6_invert;
-    unary<data::rgb> o6(&o5, &o6_invert);
+    algorithm::levels::rgb o6_levels;
+
+    o6_levels.r_input_low = channel::max_value / 2;
+    o6_levels.r_input_high = channel::max_value / 2;
+    o6_levels.g_input_low = channel::max_value / 2;
+    o6_levels.g_input_high = channel::max_value / 2;
+    o6_levels.b_input_low = channel::max_value / 2;
+    o6_levels.b_input_high = channel::max_value / 2;
+    /*
+    o6_levels.r_output_low = channel::max_value / 2;
+    o6_levels.g_output_low = channel::max_value / 2;
+    o6_levels.b_output_low = channel::max_value / 2;
+    */
+    //o6_levels.adjust_individual_channels = true;
+
+    unary<data::rgb> o6(&o5, &o6_levels);
 
     ////////////////////////////////////////
-    algorithm::channel_mixer::rgb o7_mixer(1, 0, 0, 0, 0, 0, 0, 0, 1);
-    unary<data::rgb> o7(&o6, &o7_mixer);
+    algorithm::gamma::rgb o7_gamma;
 
-    ////////////////////////////////////////
-    algorithm::gamma::rgb o8_gamma(2.2);
-    unary<data::rgb> o8(&o7, &o8_gamma);
+    //o7_gamma.r_gamma = 2.2;
+    //o7_gamma.g_gamma = 2.2;
+    //o7_gamma.b_gamma = 2.2;
+
+    unary<data::rgb> o7(&o6, &o7_gamma);
 
     ////////////////////////////////////////
     data::rgb result;
-    o8.render(&result);
+    o7.render(&result);
 
     image::save_png("test1.png", result);
 

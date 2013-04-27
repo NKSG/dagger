@@ -40,24 +40,11 @@ struct rgb : public transform<data::rgb, data::rgb>::function
     double width_scale;
     double height_scale;
 
-    rgb(int16_t _new_width, int16_t _new_height)
-      : new_width(_new_width)
-      , new_height(_new_height)
-      , width_scale(0)
-      , height_scale(0)
-    {
-    }
-
-    rgb(double _width_scale, double _height_scale)
+    rgb()
       : new_width(0)
       , new_height(0)
-      , width_scale(_width_scale)
-      , height_scale(_height_scale)
-    {
-    }
-
-    rgb(double scale)
-      : rgb(scale, scale)
+      , width_scale(1)
+      , height_scale(1)
     {
     }
 

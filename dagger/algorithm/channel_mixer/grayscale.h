@@ -37,8 +37,8 @@ struct grayscale : public transform<data::rgb, data::grayscale>::function
 {
     double r_into_g, g_into_g, b_into_g;
 
-    grayscale(double _r_into_g, double _g_into_g, double _b_into_g)
-      : r_into_g(_r_into_g), g_into_g(_g_into_g), b_into_g(_b_into_g)
+    grayscale()
+      : r_into_g(1), g_into_g(0), b_into_g(0)
     {
     }
 

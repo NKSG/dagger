@@ -37,15 +37,10 @@ struct rgb : public unary<data::rgb>::function
     double g_gamma;
     double b_gamma;
 
-    rgb(double _r_gamma, double _g_gamma, double _b_gamma)
-      : r_gamma(_r_gamma)
-      , g_gamma(_g_gamma)
-      , b_gamma(_b_gamma)
-    {
-    }
-
-    rgb(double g)
-      : rgb(g, g, g)
+    rgb()
+      : r_gamma(1)
+      , g_gamma(1)
+      , b_gamma(1)
     {
     }
 
