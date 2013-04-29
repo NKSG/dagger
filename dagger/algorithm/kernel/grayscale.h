@@ -21,9 +21,7 @@
 #pragma once
 
 
-#include <dagger/operation.h>
 #include <dagger/data/grayscale.h>
-
 #include <dagger/algorithm/kernel/base.h>
 
 
@@ -31,7 +29,7 @@ namespace dagger {
 namespace algorithm {
 namespace kernel {
 
-struct grayscale : public unary<data::grayscale>::function
+struct grayscale
 {
     matrix g_kernel;
 

@@ -21,9 +21,7 @@
 #pragma once
 
 
-#include <dagger/operation.h>
 #include <dagger/data/grayscale.h>
-
 #include <dagger/algorithm/scale/base.h>
 
 
@@ -32,7 +30,7 @@ namespace algorithm {
 namespace scale {
 
 
-struct grayscale : public transform<data::grayscale, data::grayscale>::function
+struct grayscale
 {
     int16_t new_width;
     int16_t new_height;

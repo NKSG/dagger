@@ -21,9 +21,7 @@
 #pragma once
 
 
-#include <dagger/operation.h>
 #include <dagger/data/rgb.h>
-
 #include <dagger/algorithm/levels/base.h>
 
 
@@ -32,7 +30,7 @@ namespace algorithm {
 namespace levels {
 
 
-struct rgb : public unary<data::rgb>::function
+struct rgb
 {
     int32_t r_input_low, r_input_high;
     int32_t g_input_low, g_input_high;

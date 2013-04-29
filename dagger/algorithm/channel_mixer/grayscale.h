@@ -21,10 +21,8 @@
 #pragma once
 
 
-#include <dagger/operation.h>
 #include <dagger/data/rgb.h>
 #include <dagger/data/grayscale.h>
-
 #include <dagger/algorithm/channel_mixer/base.h>
 
 
@@ -33,7 +31,7 @@ namespace algorithm {
 namespace channel_mixer {
 
 
-struct grayscale : public transform<data::rgb, data::grayscale>::function
+struct grayscale
 {
     double r_into_g, g_into_g, b_into_g;
 

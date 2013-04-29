@@ -51,29 +51,6 @@ struct rgb
     {
         return r.height();
     }
-
-    struct diff
-    {
-        channel::diff r, g, b;
-
-        diff()
-        {
-        }
-
-        diff(const rgb& i1, const rgb& i2)
-          : r(i1.r, i2.r)
-          , g(i1.g, i2.g)
-          , b(i1.b, i2.b)
-        {
-        }
-
-        void apply(rgb* d)
-        {
-            r.apply(&d->r);
-            g.apply(&d->g);
-            b.apply(&d->b);
-        }
-    };
 };
 
 }}

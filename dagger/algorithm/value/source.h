@@ -29,10 +29,8 @@ namespace algorithm {
 namespace value {
 
 
-int32_t source(int32_t source_value, int32_t source_scale)
+constexpr int32_t source(int32_t source_value, int32_t source_scale)
 {
-    assert(source_value >= 0 && source_value <= source_scale);
-
     return (static_cast<int64_t>(source_value) * channel::max_value) / source_scale;
 }
 

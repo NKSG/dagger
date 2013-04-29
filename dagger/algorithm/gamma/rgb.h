@@ -20,9 +20,7 @@
 
 #pragma once
 
-#include <dagger/operation.h>
 #include <dagger/data/rgb.h>
-
 #include <dagger/algorithm/gamma/base.h>
 
 
@@ -31,7 +29,7 @@ namespace algorithm {
 namespace gamma {
 
 
-struct rgb : public unary<data::rgb>::function
+struct rgb
 {
     double r_gamma;
     double g_gamma;

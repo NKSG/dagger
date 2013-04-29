@@ -21,9 +21,7 @@
 #pragma once
 
 
-#include <dagger/operation.h>
 #include <dagger/data/rgb.h>
-
 #include <dagger/algorithm/value/minmax.h>
 #include <dagger/algorithm/levels/base.h>
 
@@ -33,7 +31,7 @@ namespace algorithm {
 namespace auto_levels {
 
 
-struct grayscale : public unary<data::grayscale>::function
+struct grayscale
 {
     data::grayscale operator()(const data::grayscale& s)
     {

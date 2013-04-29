@@ -21,9 +21,7 @@
 #pragma once
 
 
-#include <dagger/operation.h>
 #include <dagger/data/rgb.h>
-
 #include <dagger/algorithm/invert/base.h>
 
 
@@ -32,7 +30,7 @@ namespace algorithm {
 namespace invert {
 
 
-struct rgb : public unary<data::rgb>::function
+struct rgb
 {
     data::rgb operator()(const data::rgb& s)
     {

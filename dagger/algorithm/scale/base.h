@@ -36,8 +36,6 @@ int32_t calculate(const int32_t* data, int32_t size)
     v += std::accumulate(data, data + size, static_cast<int64_t>(0));
     v /= size;
 
-    assert(v >= 0 && v <= channel::max_value);
-
     return v;
 }
 

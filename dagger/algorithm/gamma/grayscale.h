@@ -20,9 +20,7 @@
 
 #pragma once
 
-#include <dagger/operation.h>
 #include <dagger/data/grayscale.h>
-
 #include <dagger/algorithm/gamma/grayscale.h>
 
 
@@ -31,7 +29,7 @@ namespace algorithm {
 namespace gamma {
 
 
-struct grayscale : public unary<data::grayscale>::function
+struct grayscale
 {
     double g_gamma;
 

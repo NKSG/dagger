@@ -37,8 +37,6 @@ int32_t calculate(int32_t v1, int32_t v2, int32_t va)
     v += static_cast<int64_t>(v2) * (channel::max_value - va);
     v /= channel::max_value;
 
-    assert(v >= 0 && v <= channel::max_value);
-
     return v;
 }
 
@@ -63,15 +61,7 @@ channel calculate(const channel& c1, const channel& c2, int32_t a)
     int32_t image_size = c1.image_size();
 
     for (int32_t i = 0; i < image_size; i++)
-    {
-        int64_t v1 = _c1[i];
-        int64_t v2 = _c2[i];
-
-        assert(v1 >= 0 && v1 <= channel::max_value);
-        assert(v2 >= 0 && v2 <= channel::max_value);
-
-        _d[i] = calculate(v1, v2, a);
-    }
+        _d[i] = calculate(_c1[i], _c2[i], a);
 
     return d;
 }
@@ -100,17 +90,7 @@ channel calculate(const channel& c1, const channel& c2, const channel& a)
     int32_t image_size = c1.image_size();
 
     for (int32_t i = 0; i < image_size; i++)
-    {
-        int32_t v1 = _c1[i];
-        int32_t v2 = _c2[i];
-        int32_t va = _a[i];
-
-        assert(v1 >= 0 && v1 <= channel::max_value);
-        assert(v2 >= 0 && v2 <= channel::max_value);
-        assert(va >= 0 && v1 <= channel::max_value);
-
-        _d[i] = calculate(v1, v2, va);
-    }
+        _d[i] = calculate(_c1[i], _c2[i], _a[i]);
 
     return d;
 }

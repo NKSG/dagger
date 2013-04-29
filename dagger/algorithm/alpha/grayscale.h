@@ -21,9 +21,7 @@
 #pragma once
 
 
-#include <dagger/operation.h>
 #include <dagger/data/grayscale.h>
-
 #include <dagger/algorithm/alpha/base.h>
 
 
@@ -33,7 +31,7 @@ namespace alpha {
 
 
 template<typename source>
-struct grayscale : public binary<data::grayscale>::function
+struct grayscale
 {
     source* s;
 

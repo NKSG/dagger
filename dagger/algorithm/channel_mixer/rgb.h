@@ -21,9 +21,7 @@
 #pragma once
 
 
-#include <dagger/operation.h>
 #include <dagger/data/rgb.h>
-
 #include <dagger/algorithm/channel_mixer/base.h>
 
 
@@ -32,7 +30,7 @@ namespace algorithm {
 namespace channel_mixer {
 
 
-struct rgb : public unary<data::rgb>::function
+struct rgb
 {
     double r_into_r, g_into_r, b_into_r;
     double r_into_g, g_into_g, b_into_g;

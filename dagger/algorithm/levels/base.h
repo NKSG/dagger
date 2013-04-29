@@ -29,27 +29,16 @@ namespace algorithm {
 namespace levels {
 
 
-int32_t calculate(int32_t v, int32_t input_low, int32_t input_high, int32_t output_low, int32_t output_high)
+int32_t calculate(int32_t v, int32_t input_low, int32_t input_span, int32_t output_low, int32_t output_span)
 {
-    int64_t _v = 0;
+    v -= input_low;
 
-    _v = static_cast<int64_t>(v);
+    v = std::max(v, 0);
+    v = std::min(v, input_span);
 
-    _v = std::min(_v, static_cast<int64_t>(input_high));
-    _v = std::max(_v, static_cast<int64_t>(input_low));
+    v = static_cast<int64_t>(v) * output_span / input_span;
 
-    _v -= input_low;
-
-    _v = _v * (output_high - output_low);
-
-    if (input_high - input_low != 0)
-        _v /= (input_high - input_low);
-
-    _v += output_low;
-
-    v = static_cast<int32_t>(_v);
-
-    assert(v >= 0 && v <= channel::max_value);
+    v += output_low;
 
     return v;
 }
@@ -71,19 +60,18 @@ channel calculate(const channel& c, int32_t input_low, int32_t input_high, int32
     channel d(c.width(), c.height());
 
     const int32_t* _c = c.data().get();
-
     int32_t* _d = d.data().get();
 
     int32_t image_size = c.image_size();
 
+    int32_t input_span = input_high - input_low;
+    int32_t output_span = output_high - output_low;
+
+    if (input_span == 0)
+        input_span = 1;
+
     for (int32_t i = 0; i < image_size; i++)
-    {
-        int64_t v = _c[i];
-
-        assert(v >= 0 && v <= channel::max_value);
-
-        _d[i] = calculate(v, input_low, input_high, output_low, output_high);
-    }
+        _d[i] = calculate(_c[i], input_low, input_span, output_low, output_span);
 
     return d;
 }

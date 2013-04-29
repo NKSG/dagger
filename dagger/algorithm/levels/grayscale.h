@@ -21,9 +21,7 @@
 #pragma once
 
 
-#include <dagger/operation.h>
 #include <dagger/data/rgb.h>
-
 #include <dagger/algorithm/levels/base.h>
 
 
@@ -32,7 +30,7 @@ namespace algorithm {
 namespace levels {
 
 
-struct grayscale : public unary<data::grayscale>::function
+struct grayscale
 {
     int32_t g_input_low, g_input_high;
     int32_t g_output_low, g_output_high;

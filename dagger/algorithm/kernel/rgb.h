@@ -21,9 +21,7 @@
 #pragma once
 
 
-#include <dagger/operation.h>
 #include <dagger/data/rgb.h>
-
 #include <dagger/algorithm/kernel/base.h>
 
 
@@ -32,7 +30,7 @@ namespace algorithm {
 namespace kernel {
 
 
-struct rgb : public unary<data::rgb>::function
+struct rgb
 {
     matrix r_kernel;
     matrix g_kernel;

@@ -55,13 +55,7 @@ channel calculate(const channel& c, int32_t threshold)
     int32_t image_size = c.image_size();
 
     for (int32_t i = 0; i < image_size; i++)
-    {
-        int64_t v = _c[i];
-
-        assert(v >= 0 && v <= channel::max_value);
-
-        _d[i] = calculate(v, threshold);
-    }
+        _d[i] = calculate(_c[i], threshold);
 
     return d;
 }

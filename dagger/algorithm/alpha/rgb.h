@@ -21,9 +21,7 @@
 #pragma once
 
 
-#include <dagger/operation.h>
 #include <dagger/data/rgb.h>
-
 #include <dagger/algorithm/alpha/base.h>
 
 
@@ -33,7 +31,7 @@ namespace alpha {
 
 
 template<typename source>
-struct rgb : public binary<data::rgb>::function
+struct rgb
 {
     source* s;
 

@@ -41,8 +41,6 @@ int32_t calculate(int32_t v1, int32_t v1_into,
 
     v /= 1000;
 
-    assert(v >= 0 && v <= channel::max_value);
-
     return v;
 }
 
@@ -76,17 +74,7 @@ channel calculate(const channel& c1, double c1_into_d,
     int32_t v3_into = c3_into_d * 1000;
 
     for (int32_t i = 0; i < image_size; i++)
-    {
-        int32_t v1 = _c1[i];
-        int32_t v2 = _c2[i];
-        int32_t v3 = _c3[i];
-
-        assert(v1 >= 0 && v1 <= channel::max_value);
-        assert(v2 >= 0 && v2 <= channel::max_value);
-        assert(v3 >= 0 && v3 <= channel::max_value);
-
-        _d[i] = calculate(v1, v1_into, v2, v2_into, v3, v3_into);
-    }
+        _d[i] = calculate(_c1[i], v1_into, _c2[i], v2_into, _c3[i], v3_into);
 
     return d;
 }

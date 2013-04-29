@@ -21,9 +21,7 @@
 #pragma once
 
 
-#include <dagger/operation.h>
 #include <dagger/data/rgb.h>
-
 #include <dagger/algorithm/scale/base.h>
 
 
@@ -32,7 +30,7 @@ namespace algorithm {
 namespace scale {
 
 
-struct rgb : public transform<data::rgb, data::rgb>::function
+struct rgb
 {
     int16_t new_width;
     int16_t new_height;

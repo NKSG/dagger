@@ -31,11 +31,7 @@ namespace invert {
 
 int32_t calculate(int32_t v)
 {
-    v = channel::max_value - v;
-
-    assert(v >= 0 && v <= channel::max_value);
-
-    return v;
+    return channel::max_value - v;
 }
 
 
@@ -51,13 +47,7 @@ channel calculate(const channel& c)
     int32_t image_size = c.image_size();
 
     for (int32_t i = 0; i < image_size; i++)
-    {
-        int32_t v = _c[i];
-
-        assert(v >= 0 && v <= channel::max_value);
-
-        _d[i] = calculate(v);
-    }
+        _d[i] = calculate(_c[i]);
 
     return d;
 }

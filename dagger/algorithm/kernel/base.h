@@ -152,8 +152,6 @@ int32_t calculate(const int32_t* data, int32_t size, const std::vector<int64_t>&
     v = std::min(v, static_cast<int64_t>(channel::max_value));
     v = std::max(v, static_cast<int64_t>(0));
 
-    assert(v >= 0 && v <= channel::max_value);
-
     return v;
 }
 

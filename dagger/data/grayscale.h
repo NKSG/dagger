@@ -49,25 +49,6 @@ struct grayscale
     {
         return g.height();
     }
-
-    struct diff
-    {
-        channel::diff g;
-
-        diff()
-        {
-        }
-
-        diff(const grayscale& i1, const grayscale& i2)
-          : g(i1.g, i2.g)
-        {
-        }
-
-        void apply(grayscale* d)
-        {
-            g.apply(&d->g);
-        }
-    };
 };
 
 }}
